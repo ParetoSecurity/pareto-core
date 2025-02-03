@@ -52,7 +52,7 @@ require (
 	github.com/pelletier/go-toml v1.9.5
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
 	github.com/pterm/pterm v0.12.80
-	github.com/samber/lo v1.47.0
+	github.com/samber/lo v1.49.1
 	github.com/spf13/pflag v1.0.5 // indirect
 	go.uber.org/automaxprocs v1.6.0
 	go.uber.org/ratelimit v0.3.1
