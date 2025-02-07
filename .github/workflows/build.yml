@@ -7,7 +7,7 @@
 #         with:
 #           install-dependencies: false
 
-name: Integration Tests
+name: Build Tests
 
 on:
   workflow_dispatch:

@@ -16,7 +16,7 @@ if [[ -f /etc/os-release ]]; then
     if [[ "$ID_LIKE" == *"debian"* ]]; then
         TEMP_DIR=$(mktemp -d)
         echo "Downloading Pareto Security package for $ARCH..."
-        if [[ "$ARCH" == "amd64" ]]; then
+        if [[ "$ARCH" == "x86_64" || "$ARCH" == "amd64" ]]; then
             wget -q --show-progress -O "$TEMP_DIR/paretosecurity_amd64.deb" "${BASE_URL}amd64.deb"
             echo "Installing package..."
             dpkg -i "$TEMP_DIR/paretosecurity_amd64.deb"
@@ -34,7 +34,7 @@ if [[ -f /etc/os-release ]]; then
     elif [[ "$ID_LIKE" == *"arch"* ]]; then
         TEMP_DIR=$(mktemp -d)
         echo "Downloading Pareto Security package for $ARCH..."
-        if [[ "$ARCH" == "amd64" ]]; then
+        if [[ "$ARCH" == "x86_64" || "$ARCH" == "amd64" ]]; then
             wget -q --show-progress -O "$TEMP_DIR/paretosecurity_amd64.rpm" "${BASE_URL}amd64.rpm"
             echo "Installing package..."
             pacman -U "$TEMP_DIR/paretosecurity_amd64.archlinux.pkg.tar.zst"
@@ -49,7 +49,7 @@ if [[ -f /etc/os-release ]]; then
     elif [[ "$ID_LIKE" == *"rhel"* || "$ID_LIKE" == *"fedora"* ]]; then
         TEMP_DIR=$(mktemp -d)
         echo "Downloading Pareto Security package for $ARCH..."
-        if [[ "$ARCH" == "amd64" ]]; then
+        if [[ "$ARCH" == "x86_64" || "$ARCH" == "amd64" ]]; then
             wget -q --show-progress -O "$TEMP_DIR/paretosecurity_amd64.rpm" "${BASE_URL}amd64.archlinux.pkg.tar.zst"
             echo "Installing package..."
             rpm -i "$TEMP_DIR/paretosecurity_amd64.rpm"
