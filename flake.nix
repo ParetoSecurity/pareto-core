@@ -1,6 +1,6 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/am-on/a3fc8967fa9ebe2e2c77207a8d53d8f9fa05aba3";
+    nixpkgs.url = "github:am-on/nixpkgs";
     nix-vm-test.url = "github:numtide/nix-vm-test";
     systems.url = "github:nix-systems/default";
   };
