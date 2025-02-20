@@ -5,10 +5,12 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/caarlos0/log"
 	"github.com/pelletier/go-toml"
 )
 
 var Config ParetoConfig
+var configPath string
 
 type CheckStatus struct {
 	UpdatedAt time.Time
@@ -22,13 +24,18 @@ type ParetoConfig struct {
 	Checks    map[string]CheckStatus
 }
 
-func SaveConfig() error {
-	configDir, err := os.UserConfigDir()
+func init() {
+	states = make(map[string]LastState)
+	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return err
+		log.WithError(err).Warn("failed to get user home directory, using current directory instead")
+		homeDir = "."
 	}
+	configPath = filepath.Join(homeDir, ".config", "pareto.toml")
+	log.Debugf("configPath: %s", configPath)
+}
 
-	configPath := filepath.Join(configDir, "pareto.toml")
+func SaveConfig() error {
 	file, err := os.Create(configPath)
 	if err != nil {
 		return err
@@ -40,12 +47,6 @@ func SaveConfig() error {
 }
 
 func LoadConfig() error {
-	configDir, err := os.UserConfigDir()
-	if err != nil {
-		return err
-	}
-
-	configPath := filepath.Join(configDir, "pareto.toml")
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		if err := SaveConfig(); err != nil {
 			return err

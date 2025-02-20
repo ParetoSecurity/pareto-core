@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/ParetoSecurity/pareto-core/shared"
+	shared "github.com/ParetoSecurity/pareto-core/shared"
 	"github.com/caarlos0/log"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/samber/lo"
@@ -38,38 +38,42 @@ var linkCmd = &cobra.Command{
 	Use:   "link --url <url>",
 	Short: "Link team with this device",
 	Run: func(cc *cobra.Command, args []string) {
-		if shared.IsLinked() {
-			log.Warn("Already linked to a team")
-			log.Warn("Unlink first with `pareto unlink`")
-			log.Infof("Team ID: %s", shared.Config.TeamID)
+		teamURL, _ := cc.Flags().GetString("url")
+		runLinkCommand(teamURL)
+
+	},
+}
+
+func runLinkCommand(teamURL string) {
+	if shared.IsLinked() {
+		log.Warn("Already linked to a team")
+		log.Warn("Unlink first with `pareto unlink`")
+		log.Infof("Team ID: %s", shared.Config.TeamID)
+		os.Exit(1)
+	}
+
+	if lo.IsNotEmpty(teamURL) {
+		token, err := getTokenFromURL(teamURL)
+		if err != nil {
+			log.WithError(err).Warn("failed to get token from URL")
 			os.Exit(1)
 		}
 
-		teamURL, _ := cc.Flags().GetString("url")
-		if lo.IsNotEmpty(teamURL) {
-			token, err := getTokenFromURL(teamURL)
-			if err != nil {
-				log.WithError(err).Warn("failed to get token from URL")
-				os.Exit(1)
-			}
-
-			parsedToken, err := parseJWT(token)
-			if err != nil {
-				log.WithError(err).Warn("failed to parse JWT")
-				os.Exit(1)
-			}
-
-			shared.Config.TeamID = parsedToken.TeamUUID
-			shared.Config.AuthToken = parsedToken.TeamAuth
-			err = shared.SaveConfig()
-			if err != nil {
-				log.Errorf("Error saving config: %v", err)
-				os.Exit(1)
-			}
-			log.Infof("Device successfully linked to team: %s", parsedToken.TeamUUID)
+		parsedToken, err := parseJWT(token)
+		if err != nil {
+			log.WithError(err).Warn("failed to parse JWT")
+			os.Exit(1)
 		}
 
-	},
+		shared.Config.TeamID = parsedToken.TeamUUID
+		shared.Config.AuthToken = parsedToken.TeamAuth
+		err = shared.SaveConfig()
+		if err != nil {
+			log.Errorf("Error saving config: %v", err)
+			os.Exit(1)
+		}
+		log.Infof("Device successfully linked to team: %s", parsedToken.TeamUUID)
+	}
 }
 
 func getTokenFromURL(teamURL string) (string, error) {

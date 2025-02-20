@@ -9,8 +9,8 @@
   upstream = import inputs.upstream {system = pkgs.stdenv.system;};
 in {
   packages = [
-    pkgs.alejandra
-    pkgs.goreleaser
+    upstream.alejandra
+    upstream.goreleaser
     upstream.go_1_24
   ];
   languages.nix.enable = true;
@@ -24,7 +24,7 @@ in {
     echo
     echo Helper scripts:
     echo
-    ${pkgs.gnused}/bin/sed -e 's| |••|g' -e 's|=| |' <<EOF | ${pkgs.util-linuxMinimal}/bin/column -t | ${pkgs.gnused}/bin/sed -e 's|••| |g'
+    ${upstream.gnused}/bin/sed -e 's| |••|g' -e 's|=| |' <<EOF | ${upstream.util-linuxMinimal}/bin/column -t | ${upstream.gnused}/bin/sed -e 's|••| |g'
     ${lib.generators.toKeyValue {} (lib.filterAttrs (name: _: name != "help-scripts") (lib.mapAttrs (name: value: value.description) config.scripts))}
     EOF
     echo

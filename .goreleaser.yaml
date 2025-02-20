@@ -7,62 +7,63 @@ version: 2
 project_name: paretosecurity
 before:
   hooks:
-    - go mod tidy
+  - go mod tidy
 
 builds:
-  - env:
-      - CGO_ENABLED=0
-    goos:
-      - linux
-      - windows
-      - darwin
-    goarch:
-      - amd64
-      - arm64
-    tags:
-      - menubar
-    flags:
-      - -v
-      - -trimpath
-    gcflags:
-      - all=-trimpath=${GOPATH}
-    ldflags:
-      - -s -w
-      - -X github.com/ParetoSecurity/pareto-core/shared.Version={{.Version}}
-      - -X github.com/ParetoSecurity/pareto-core/shared.Commit={{.Commit}}
-      - -X github.com/ParetoSecurity/pareto-core/shared.Date={{.Date}}
-    binary: paretosecurity
+- main: ./cmd/paretosecurity
+  env:
+  - CGO_ENABLED=0
+  goos:
+  - linux
+  - windows
+  - darwin
+  goarch:
+  - amd64
+  - arm64
+  tags:
+  - menubar
+  flags:
+  - -v
+  - -trimpath
+  gcflags:
+  - all=-trimpath=${GOPATH}
+  ldflags:
+  - -s -w
+  - -X github.com/ParetoSecurity/pareto-core/shared.Version={{.Version}}
+  - -X github.com/ParetoSecurity/pareto-core/shared.Commit={{.Commit}}
+  - -X github.com/ParetoSecurity/pareto-core/shared.Date={{.Date}}
+  binary: paretosecurity
 
 archives:
-  - formats:
-      - tar.gz
-    format_overrides:
-      - goos: windows
-        formats:
-          - zip
+- formats:
+  - tar.gz
+  format_overrides:
+  - goos: windows
+    formats:
+    - zip
 nfpms:
-  - vendor: niteo.co
-    homepage: https://github.com/paretosecurity/pareto-core
-    maintainer: Niteo
-    description: Automatically audit your Linux machine for basic security hygiene.
-    license: GPL3
-    formats: [deb, rpm, apk, archlinux]
-    bindir: /usr/bin
-    file_name_template: "{{ .ProjectName }}_{{ .Arch }}.{{ .Format }}"
-    dependencies:
-      - curl
-    scripts:
-      postinstall: "apt/postinstall.sh"
-    contents:
-      - src: apt/ParetoSecurity.desktop
-        dst: /usr/share/applications/ParetoSecurity.desktop
-      - src: apt/ParetoSecurityLink.desktop
-        dst: /usr/share/applications/ParetoSecurityLink.desktop
-      - src: assets/Mac_512pt@2x.png
-        dst: /usr/share/icons/hicolor/512x512/apps/ParetoSecurity.png
+- vendor: niteo.co
+  homepage: https://github.com/paretosecurity/pareto-core
+  maintainer: Niteo
+  description: Automatically audit your Linux machine for basic security hygiene.
+  license: GPL3
+  formats: [ deb, rpm, apk, archlinux ]
+  bindir: /usr/bin
+  file_name_template: "{{ .ProjectName }}_{{ .Arch }}.{{ .Format }}"
+  dependencies:
+  - curl
+  scripts:
+    postinstall: "apt/postinstall.sh"
+  contents:
+  - src: apt/ParetoSecurity.desktop
+    dst: /usr/share/applications/ParetoSecurity.desktop
+  - src: apt/ParetoSecurityLink.desktop
+    dst: /usr/share/applications/ParetoSecurityLink.desktop
+  - src: assets/Mac_512pt@2x.png
+    dst: /usr/share/icons/hicolor/512x512/apps/ParetoSecurity.png
 changelog:
   sort: asc
   filters:
     exclude:
-      - "^docs:"
-      - "^test:"
+    - "^docs:"
+    - "^test:"

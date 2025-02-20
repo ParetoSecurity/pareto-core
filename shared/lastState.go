@@ -20,7 +20,7 @@ var (
 	mutex       sync.RWMutex
 	states      = make(map[string]LastState)
 	lastModTime time.Time
-	configPath  string
+	statePath   string
 )
 
 func init() {
@@ -30,7 +30,7 @@ func init() {
 		log.WithError(err).Warn("failed to get user home directory, using current directory instead")
 		homeDir = "."
 	}
-	configPath = filepath.Join(homeDir, ".cache", "paretosecurity.state")
+	statePath = filepath.Join(homeDir, ".cache", "paretosecurity.state")
 }
 
 // Commit writes the current state map to the TOML file.
@@ -38,7 +38,7 @@ func CommitLastState() error {
 	mutex.Lock()
 	defer mutex.Unlock()
 
-	file, err := os.Create(configPath)
+	file, err := os.Create(statePath)
 	if err != nil {
 		return err
 	}
@@ -84,13 +84,13 @@ func GetModifiedTime() time.Time {
 }
 
 func loadStates() {
-	fileInfo, err := os.Stat(configPath)
+	fileInfo, err := os.Stat(statePath)
 	if err != nil {
 		return
 	}
 
 	if fileInfo.ModTime().After(lastModTime) {
-		file, err := os.Open(configPath)
+		file, err := os.Open(statePath)
 		if err != nil {
 			return
 		}

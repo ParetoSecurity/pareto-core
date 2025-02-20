@@ -8,11 +8,10 @@ devenv.local.nix
 # pre-commit
 .pre-commit-config.yaml
 
-
 # Added by cargo
 
 /target
 .DS_Store
 dist
 dist/
-cover.out
+coverage.txt

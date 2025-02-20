@@ -1,11 +1,10 @@
-package team
+package shared
 
 import (
 	"encoding/base64"
 	"encoding/json"
 	"testing"
 
-	"github.com/ParetoSecurity/pareto-core/shared"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -44,8 +43,8 @@ func TestDeviceAuth(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			shared.Config.AuthToken = tt.authToken
-			result := shared.DeviceAuth()
+			Config.AuthToken = tt.authToken
+			result := DeviceAuth()
 			assert.Equal(t, tt.expected, result)
 		})
 	}
