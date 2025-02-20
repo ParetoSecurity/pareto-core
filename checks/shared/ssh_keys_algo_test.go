@@ -98,4 +98,56 @@ func TestIsKeyStrong(t *testing.T) {
 			}
 		})
 	}
+	t.Run("Run command", func(t *testing.T) {
+		_ = algo.IsRunnable()
+		_ = algo.Run()
+	})
+}
+
+func TestSSHKeysAlgo_Name(t *testing.T) {
+	dockerAccess := &SSHKeysAlgo{}
+	expectedName := "SSH keys have sufficient algorithm strength"
+	if dockerAccess.Name() != expectedName {
+		t.Errorf("Expected Name %s, got %s", expectedName, dockerAccess.Name())
+	}
+}
+
+func TestSSHKeysAlgo_Status(t *testing.T) {
+	dockerAccess := &SSHKeysAlgo{}
+	expectedStatus := "SSH key  is using weak encryption"
+	if dockerAccess.Status() != expectedStatus {
+		t.Errorf("Expected Status %s, got %s", expectedStatus, dockerAccess.Status())
+	}
+}
+
+func TestSSHKeysAlgo_UUID(t *testing.T) {
+	dockerAccess := &SSHKeysAlgo{}
+	expectedUUID := "ef69f752-0e89-46e2-a644-310429ae5f45"
+	if dockerAccess.UUID() != expectedUUID {
+		t.Errorf("Expected UUID %s, got %s", expectedUUID, dockerAccess.UUID())
+	}
+}
+
+func TestSSHKeysAlgo_Passed(t *testing.T) {
+	dockerAccess := &SSHKeysAlgo{passed: true}
+	expectedPassed := true
+	if dockerAccess.Passed() != expectedPassed {
+		t.Errorf("Expected Passed %v, got %v", expectedPassed, dockerAccess.Passed())
+	}
+}
+
+func TestSSHKeysAlgo_FailedMessage(t *testing.T) {
+	dockerAccess := &SSHKeysAlgo{}
+	expectedFailedMessage := "SSH keys are using weak encryption"
+	if dockerAccess.FailedMessage() != expectedFailedMessage {
+		t.Errorf("Expected FailedMessage %s, got %s", expectedFailedMessage, dockerAccess.FailedMessage())
+	}
+}
+
+func TestSSHKeysAlgo_PassedMessage(t *testing.T) {
+	dockerAccess := &SSHKeysAlgo{}
+	expectedPassedMessage := "SSH keys use strong encryption"
+	if dockerAccess.PassedMessage() != expectedPassedMessage {
+		t.Errorf("Expected PassedMessage %s, got %s", expectedPassedMessage, dockerAccess.PassedMessage())
+	}
 }
