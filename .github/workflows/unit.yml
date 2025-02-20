@@ -65,7 +65,7 @@ jobs:
       actions: read
       pull-requests: write
     steps:
-    - uses: teamniteo/go-coverage-report@main
+    - uses: teamniteo/go-coverage-report@v3
       with:
         coverage-artifact-name: "code-coverage"
         coverage-file-name: "coverage.txt"
