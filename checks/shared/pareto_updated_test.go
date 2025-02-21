@@ -25,7 +25,7 @@ func TestParetoUpdated_Name(t *testing.T) {
 
 func TestParetoUpdated_Status(t *testing.T) {
 	dockerAccess := &ParetoUpdated{}
-	expectedStatus := "Pareto Security is oudated"
+	expectedStatus := "Pareto Security is outdated"
 	if dockerAccess.Status() != expectedStatus {
 		t.Errorf("Expected Status %s, got %s", expectedStatus, dockerAccess.Status())
 	}
@@ -49,7 +49,7 @@ func TestParetoUpdated_Passed(t *testing.T) {
 
 func TestParetoUpdated_FailedMessage(t *testing.T) {
 	dockerAccess := &ParetoUpdated{}
-	expectedFailedMessage := "Pareto Security is oudated"
+	expectedFailedMessage := "Pareto Security is outdated"
 	if dockerAccess.FailedMessage() != expectedFailedMessage {
 		t.Errorf("Expected FailedMessage %s, got %s", expectedFailedMessage, dockerAccess.FailedMessage())
 	}
