@@ -63,4 +63,57 @@ func TestHasPassword(t *testing.T) {
 			t.Errorf("hasPassword() = %v; want true", got)
 		}
 	})
+
+	t.Run("Run command", func(t *testing.T) {
+		_ = s.IsRunnable()
+		_ = s.Run()
+	})
+}
+
+func TestSSHKeys_Name(t *testing.T) {
+	dockerAccess := &SSHKeys{}
+	expectedName := "SSH keys have password protection"
+	if dockerAccess.Name() != expectedName {
+		t.Errorf("Expected Name %s, got %s", expectedName, dockerAccess.Name())
+	}
+}
+
+func TestSSHKeys_Status(t *testing.T) {
+	dockerAccess := &SSHKeys{}
+	expectedStatus := "Found unprotected SSH key(s): "
+	if dockerAccess.Status() != expectedStatus {
+		t.Errorf("Expected Status %s, got %s", expectedStatus, dockerAccess.Status())
+	}
+}
+
+func TestSSHKeys_UUID(t *testing.T) {
+	dockerAccess := &SSHKeys{}
+	expectedUUID := "b6aaec0f-d76c-429e-aecf-edab7f1ac400"
+	if dockerAccess.UUID() != expectedUUID {
+		t.Errorf("Expected UUID %s, got %s", expectedUUID, dockerAccess.UUID())
+	}
+}
+
+func TestSSHKeys_Passed(t *testing.T) {
+	dockerAccess := &SSHKeys{passed: true}
+	expectedPassed := true
+	if dockerAccess.Passed() != expectedPassed {
+		t.Errorf("Expected Passed %v, got %v", expectedPassed, dockerAccess.Passed())
+	}
+}
+
+func TestSSHKeys_FailedMessage(t *testing.T) {
+	dockerAccess := &SSHKeys{}
+	expectedFailedMessage := "SSH keys are not using password"
+	if dockerAccess.FailedMessage() != expectedFailedMessage {
+		t.Errorf("Expected FailedMessage %s, got %s", expectedFailedMessage, dockerAccess.FailedMessage())
+	}
+}
+
+func TestSSHKeys_PassedMessage(t *testing.T) {
+	dockerAccess := &SSHKeys{}
+	expectedPassedMessage := "SSH keys are password protected"
+	if dockerAccess.PassedMessage() != expectedPassedMessage {
+		t.Errorf("Expected PassedMessage %s, got %s", expectedPassedMessage, dockerAccess.PassedMessage())
+	}
 }
