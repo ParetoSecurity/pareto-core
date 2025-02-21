@@ -97,7 +97,7 @@ func (f *ParetoUpdated) PassedMessage() string {
 
 // FailedMessage returns the message to return if the check failed
 func (f *ParetoUpdated) FailedMessage() string {
-	return "Pareto Security is oudated"
+	return "Pareto Security is outdated"
 }
 
 // RequiresRoot returns whether the check requires root access
