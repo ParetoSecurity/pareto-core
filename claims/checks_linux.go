@@ -16,8 +16,8 @@ var All = []Claim{
 		check.Register(&checks.SSHConfigCheck{}),
 		check.Register(&checks.PasswordManagerCheck{}),
 	}},
-	{"Software Updates", []check.Check{
-		check.Register(&checks.SoftwareUpdates{}),
+	{"Application Updates", []check.Check{
+		check.Register(&checks.ApplicationUpdates{}),
 		check.Register(&shared.ParetoUpdated{}),
 	}},
 	{"Firewall & Sharing", []check.Check{
