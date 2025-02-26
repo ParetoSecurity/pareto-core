@@ -12,7 +12,7 @@ var All = []Claim{
 		check.Register(&shared.SSHKeysAlgo{}),
 		check.Register(&checks.PasswordManagerCheck{}),
 	}},
-	{"Software Updates", []check.Check{
+	{"Application Updates", []check.Check{
 		check.Register(&shared.ParetoUpdated{}),
 	}},
 	{"Firewall & Sharing", []check.Check{

@@ -9,17 +9,17 @@ import (
 	"github.com/samber/lo"
 )
 
-type SoftwareUpdates struct {
+type ApplicationUpdates struct {
 	passed  bool
 	details string
 }
 
 // Name returns the name of the check
-func (f *SoftwareUpdates) Name() string {
+func (f *ApplicationUpdates) Name() string {
 	return "Apps are up to date"
 }
 
-func (f *SoftwareUpdates) checkUpdates() (bool, string) {
+func (f *ApplicationUpdates) checkUpdates() (bool, string) {
 	updates := []string{}
 
 	// Check flatpak
@@ -75,7 +75,7 @@ func (f *SoftwareUpdates) checkUpdates() (bool, string) {
 }
 
 // Run executes the check
-func (f *SoftwareUpdates) Run() error {
+func (f *ApplicationUpdates) Run() error {
 	var ok bool
 	ok, f.details = f.checkUpdates()
 	f.passed = ok
@@ -83,36 +83,36 @@ func (f *SoftwareUpdates) Run() error {
 }
 
 // Passed returns the status of the check
-func (f *SoftwareUpdates) Passed() bool {
+func (f *ApplicationUpdates) Passed() bool {
 	return f.passed
 }
 
 // CanRun returns whether the check can run
-func (f *SoftwareUpdates) IsRunnable() bool {
+func (f *ApplicationUpdates) IsRunnable() bool {
 	return true
 }
 
 // UUID returns the UUID of the check
-func (f *SoftwareUpdates) UUID() string {
+func (f *ApplicationUpdates) UUID() string {
 	return "7436553a-ae52-479b-937b-2ae14d15a520"
 }
 
 // PassedMessage returns the message to return if the check passed
-func (f *SoftwareUpdates) PassedMessage() string {
+func (f *ApplicationUpdates) PassedMessage() string {
 	return "All apps are up to date"
 }
 
 // FailedMessage returns the message to return if the check failed
-func (f *SoftwareUpdates) FailedMessage() string {
+func (f *ApplicationUpdates) FailedMessage() string {
 	return "Some apps are out of date"
 }
 
 // RequiresRoot returns whether the check requires root access
-func (f *SoftwareUpdates) RequiresRoot() bool {
+func (f *ApplicationUpdates) RequiresRoot() bool {
 	return false
 }
 
 // Status returns the status of the check
-func (f *SoftwareUpdates) Status() string {
+func (f *ApplicationUpdates) Status() string {
 	return f.details
 }
