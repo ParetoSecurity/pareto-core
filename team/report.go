@@ -72,7 +72,7 @@ func NowReport(all []claims.Claim) Report {
 // ReportAndSave generates a report and saves it to the configuration file.
 func ReportToTeam(initial bool) error {
 	var report interface{}
-	log.Debug(spew.Sdump(report))
+
 	res := ""
 	errRes := ""
 	method := http.MethodPatch
@@ -82,6 +82,7 @@ func ReportToTeam(initial bool) error {
 	} else {
 		report = NowReport(claims.All)
 	}
+	log.Debug(spew.Sdump(report))
 	err := requests.URL(reportURL).
 		Pathf("/api/v1/team/%s/device", shared.Config.TeamID).
 		Method(method).
