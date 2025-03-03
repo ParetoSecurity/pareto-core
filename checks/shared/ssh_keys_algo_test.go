@@ -23,6 +23,12 @@ func TestIsKeyStrong(t *testing.T) {
 			expectPass: true,
 		},
 		{
+			name:       "RSA meets requirement in parentheses",
+			output:     "2048 SHA256:redacted .ssh/id_rsa.pub (RSA)",
+			err:        nil,
+			expectPass: true,
+		},
+		{
 			name:       "RSA below requirement",
 			output:     "2047 abc dummy RSA",
 			err:        nil,
@@ -55,6 +61,12 @@ func TestIsKeyStrong(t *testing.T) {
 		{
 			name:       "Ed25519 meets requirement",
 			output:     "256 abc dummy ED25519",
+			err:        nil,
+			expectPass: true,
+		},
+		{
+			name:       "Ed25519 meets requirement in parentheses",
+			output:     "256 SHA256:redacted example@example.org (ED25519)",
 			err:        nil,
 			expectPass: true,
 		},

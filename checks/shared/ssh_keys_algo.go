@@ -54,10 +54,18 @@ func parseKeyInfo(output string) KeyInfo {
 	}
 
 	strength, _ := strconv.Atoi(parts[0])
+	keyType := strings.ToUpper(parts[len(parts)-1])
+	keyType = strings.Map(func(r rune) rune {
+		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') {
+			return r
+		}
+		return -1
+	}, keyType)
+
 	return KeyInfo{
 		strength:  strength,
 		signature: parts[1],
-		keyType:   KeyType(strings.ToUpper(parts[len(parts)-1])),
+		keyType:   KeyType(keyType),
 	}
 }
 
