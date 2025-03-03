@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"net/url"
 	"os"
@@ -39,29 +40,39 @@ var linkCmd = &cobra.Command{
 	Use:   "link <url>",
 	Short: "Link team with this device",
 	Run: func(cc *cobra.Command, args []string) {
-		runLinkCommand(args[0])
+		if shared.IsRoot() {
+			log.Fatal("Please run this command as a normal user.")
+		}
+		err := runLinkCommand(args[0])
+		if err != nil {
+			os.Exit(1)
+		}
 	},
 }
 
-func runLinkCommand(teamURL string) {
+func runLinkCommand(teamURL string) error {
+	if lo.IsEmpty(teamURL) {
+		log.Warn("Please provide a team URL")
+		return errors.New("no team URL provided")
+	}
 	if shared.IsLinked() {
 		log.Warn("Already linked to a team")
 		log.Warn("Unlink first with `pareto unlink`")
 		log.Infof("Team ID: %s", shared.Config.TeamID)
-		os.Exit(1)
+		return errors.New("already linked to a team")
 	}
 
 	if lo.IsNotEmpty(teamURL) {
 		token, err := getTokenFromURL(teamURL)
 		if err != nil {
 			log.WithError(err).Warn("failed to get token from URL")
-			os.Exit(1)
+			return err
 		}
 
 		parsedToken, err := parseJWT(token)
 		if err != nil {
 			log.WithError(err).Warn("failed to parse JWT")
-			os.Exit(1)
+			return err
 		}
 
 		shared.Config.TeamID = parsedToken.TeamUUID
@@ -70,16 +81,18 @@ func runLinkCommand(teamURL string) {
 		err = team.ReportToTeam(true)
 		if err != nil {
 			log.WithError(err).Warn("failed to report to team")
-			os.Exit(1)
+			return err
 		}
 
 		err = shared.SaveConfig()
 		if err != nil {
 			log.Errorf("Error saving config: %v", err)
-			os.Exit(1)
+			return err
 		}
 		log.Infof("Device successfully linked to team: %s", parsedToken.TeamUUID)
+
 	}
+	return nil
 }
 
 func getTokenFromURL(teamURL string) (string, error) {
