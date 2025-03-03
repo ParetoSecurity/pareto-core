@@ -67,3 +67,5 @@ if [[ -f /etc/os-release ]]; then
 fi
 
 echo "Pareto Security has been installed successfully."
+echo "From now on, your package manager will automatically handle updates."
+echo "To initiate the application, kindly execute the ‘paretosecurity check’ command. Alternatively, you may proceed with joining the team from the dashboard."
