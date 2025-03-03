@@ -48,9 +48,9 @@ var linkCmd = &cobra.Command{
 		err := runLinkCommand(args[0])
 		if err != nil {
 			log.WithError(err).Fatal("Failed to link team")
-			NotifyBlocking("Failed to link team")
+			NotifyBlocking("Failed to add device to the team!")
 		}
-		NotifyBlocking("Device successfully linked to team!")
+		NotifyBlocking("Device successfully linked to the team!")
 	},
 }
 

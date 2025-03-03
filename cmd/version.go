@@ -37,6 +37,8 @@ var (
 				log.Warn("Failed to get process information")
 			}
 			envInfo := hostInfo.Info()
+			envInfo.IPs = []string{}
+			envInfo.MACs = []string{}
 			jsonOutput, err := json.MarshalIndent(envInfo, "", "  ")
 			if err != nil {
 				log.Warn("Failed to marshal host info")
