@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"os"
 	"strings"
 
 	shared "github.com/ParetoSecurity/pareto-core/shared"
@@ -43,9 +42,12 @@ var linkCmd = &cobra.Command{
 		if shared.IsRoot() {
 			log.Fatal("Please run this command as a normal user.")
 		}
+		if len(args) < 1 {
+			log.Fatal("Please provide a team URL")
+		}
 		err := runLinkCommand(args[0])
 		if err != nil {
-			os.Exit(1)
+			log.WithError(err).Fatal("Failed to link team")
 		}
 	},
 }
@@ -54,6 +56,9 @@ func runLinkCommand(teamURL string) error {
 	if lo.IsEmpty(teamURL) {
 		log.Warn("Please provide a team URL")
 		return errors.New("no team URL provided")
+	}
+	if strings.Contains(teamURL, "https://") {
+		return errors.New("team URL should not contain the protocol")
 	}
 	if shared.IsLinked() {
 		log.Warn("Already linked to a team")
