@@ -5,9 +5,9 @@ package cmd
 
 import (
 	"os"
-	"os/exec"
 	"path/filepath"
 
+	"github.com/ParetoSecurity/pareto-core/shared"
 	"github.com/caarlos0/log"
 )
 
@@ -74,11 +74,11 @@ func installUserTimer() {
 	}
 
 	// Execute commands
-	if err := exec.Command("systemctl", "--user", "daemon-reload").Run(); err != nil {
+	if _, err := shared.RunCommand("systemctl", "--user", "daemon-reload"); err != nil {
 		log.Fatalf("Failed to reload systemd:", err)
 		return
 	}
-	if err := exec.Command("systemctl", "--user", "enable", "--now", "pareto-coretimer").Run(); err != nil {
+	if _, err := shared.RunCommand("systemctl", "--user", "enable", "--now", "pareto-coretimer"); err != nil {
 		log.Fatalf("Failed to enable and start timer:", err)
 		return
 	}
@@ -91,32 +91,32 @@ func uninstallUserTimer() {
 	// Logic to uninstall the user timer
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		log.Fatalf("Failed to get home directory:", err)
+		log.WithError(err).Fatal("Failed to get home directory:")
 		return
 	}
 
 	systemdPath := filepath.Join(homeDir, ".config", "systemd", "user")
 	if err := os.MkdirAll(systemdPath, 0755); err != nil {
-		log.Fatalf("Failed to create systemd user directory:", err)
+		log.WithError(err).Fatal("Failed to create systemd user directory")
 		return
 	}
 
 	// Create timer file
 	timerPath := filepath.Join(systemdPath, "pareto-coretimer")
 	if err := os.Remove(timerPath); err != nil {
-		log.Fatalf("Failed to remove timer file:", err)
+		log.WithError(err).Fatal("Failed to remove timer file")
 		return
 	}
 
 	// Create service file
 	servicePath := filepath.Join(systemdPath, "pareto-coreservice")
 	if err := os.Remove(servicePath); err != nil {
-		log.Fatalf("Failed to remove service file:", err)
+		log.WithError(err).Fatal("Failed to remove service file")
 		return
 	}
 	// Execute commands
-	if err := exec.Command("systemctl", "--user", "daemon-reload").Run(); err != nil {
-		log.Fatalf("Failed to reload systemd:", err)
+	if _, err := shared.RunCommand("systemctl", "--user", "daemon-reload"); err != nil {
+		log.WithError(err).Fatal("Failed to reload systemd")
 		return
 	}
 }
