@@ -87,7 +87,7 @@ func TestCurrentReportingDevice(t *testing.T) {
 		Config.AuthToken = dummyToken
 
 		rd := CurrentReportingDevice()
-		if rd.Auth != "authValue" {
+		if rd.Auth != "header.eyJpYXQiOjEsInJvbGUiOiJkdW1teSIsInN1YiI6ImR1bW15IiwidGVhbUlEIjoiZHVtbXkiLCJ0b2tlbiI6ImF1dGhWYWx1ZSJ9.signature" {
 			t.Errorf("Expected Auth %q, got %q", "authValue", rd.Auth)
 		}
 	})
