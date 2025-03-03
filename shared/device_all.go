@@ -1,8 +1,6 @@
 package shared
 
 import (
-	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"os"
 	"runtime"
@@ -31,7 +29,7 @@ func CurrentReportingDevice() ReportingDevice {
 	return ReportingDevice{
 		MachineUUID: device.UUID,
 		MachineName: Sanitize(device.Hostname),
-		Auth:        DeviceAuth(),
+		Auth:        Config.AuthToken,
 		OSVersion:   osVersion,
 		ModelName: func() string {
 			modelName, err := SystemDevice()
@@ -110,34 +108,4 @@ func NewLinkingDevice() (*LinkingDevice, error) {
 		UUID:      systemUUID,
 		Ticket:    ticket.String(),
 	}, nil
-}
-
-// DeviceAuth decodes a JWT token from the shared configuration's AuthToken,
-// extracts the payload, and returns the token string from the payload.
-// It returns an empty string if there is an error during decoding or unmarshalling.
-func DeviceAuth() string {
-	type Payload struct {
-		Sub    string `json:"sub"`
-		TeamID string `json:"teamID"`
-		Role   string `json:"role"`
-		Iat    int    `json:"iat"`
-		Token  string `json:"token"`
-	}
-
-	if Config.AuthToken == "" {
-		return ""
-	}
-
-	payload := Payload{}
-	claims := strings.Split(Config.AuthToken, ".")[1]
-	token, err := base64.RawURLEncoding.DecodeString(claims)
-	if err != nil {
-		log.WithError(err).WithField("claims", claims).Warn("failed to decode claims")
-		return ""
-	}
-	if err := json.Unmarshal(token, &payload); err != nil {
-		log.WithError(err).WithField("claims", claims).Warn("failed to unmarshal claims")
-		return ""
-	}
-	return payload.Token
 }
