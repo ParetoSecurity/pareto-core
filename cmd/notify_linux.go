@@ -52,7 +52,7 @@ func NotifyBlocking(message string) (string, error) {
 		"ParetoSecurity",          // Application name
 		uint32(0),                 // Replace ID
 		"dialog-information",      // Icon (system dialog icon)
-		"Pareto Linux",            // Summary
+		"Pareto Security",         // Summary
 		message,                   // Body
 		[]string{"default", "OK"}, // Actions (default is the action id, OK is the label)
 		map[string]interface{}{
