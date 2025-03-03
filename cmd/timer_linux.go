@@ -60,14 +60,14 @@ func installUserTimer() {
 	}
 
 	// Create timer file
-	timerPath := filepath.Join(systemdPath, "pareto-coretimer")
+	timerPath := filepath.Join(systemdPath, "pareto-core.timer")
 	if err := os.WriteFile(timerPath, []byte(timerContent), 0644); err != nil {
 		log.WithError(err).Fatal("Failed to create timer file")
 		return
 	}
 
 	// Create service file
-	servicePath := filepath.Join(systemdPath, "pareto-coreservice")
+	servicePath := filepath.Join(systemdPath, "pareto-core.service")
 	if err := os.WriteFile(servicePath, []byte(localServiceContent), 0644); err != nil {
 		log.WithError(err).Fatal("Failed to create service file")
 		return
@@ -78,7 +78,7 @@ func installUserTimer() {
 		log.WithError(err).WithField("out", out).Fatal("Failed to reload systemd")
 		return
 	}
-	if out, err := shared.RunCommand("systemctl", "--user", "enable", "--now", "pareto-coretimer"); err != nil {
+	if out, err := shared.RunCommand("systemctl", "--user", "enable", "--now", "pareto-core.timer"); err != nil {
 		log.WithError(err).WithField("out", out).Fatal("Failed to enable and start timer")
 		return
 	}
