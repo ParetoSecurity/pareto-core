@@ -70,14 +70,18 @@ func NowReport(all []claims.Claim) Report {
 }
 
 // ReportAndSave generates a report and saves it to the configuration file.
-func ReportToTeam() error {
+func ReportToTeam(initial bool) error {
 	report := NowReport(claims.All)
 	log.Debug(spew.Sdump(report))
 	res := ""
 	errRes := ""
+	method := http.MethodPatch
+	if initial {
+		method = http.MethodPut
+	}
 	err := requests.URL(reportURL).
 		Pathf("/api/v1/team/%s/device", shared.Config.TeamID).
-		Method(http.MethodPatch).
+		Method(method).
 		Transport(shared.HTTPTransport()).
 		Header("X-Device-Auth", "Bearer "+shared.Config.AuthToken).
 		BodyJSON(&report).

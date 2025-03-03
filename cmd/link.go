@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	shared "github.com/ParetoSecurity/pareto-core/shared"
+	"github.com/ParetoSecurity/pareto-core/team"
 	"github.com/caarlos0/log"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/samber/lo"
@@ -65,6 +66,13 @@ func runLinkCommand(teamURL string) {
 
 		shared.Config.TeamID = parsedToken.TeamUUID
 		shared.Config.AuthToken = parsedToken.TeamAuth
+
+		err = team.ReportToTeam(true)
+		if err != nil {
+			log.WithError(err).Warn("failed to report to team")
+			os.Exit(1)
+		}
+
 		err = shared.SaveConfig()
 		if err != nil {
 			log.Errorf("Error saving config: %v", err)

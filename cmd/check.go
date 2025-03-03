@@ -78,7 +78,7 @@ func checkCommand(jsonOutput bool, schemaOutput bool, installFlag bool, uninstal
 	select {
 	case <-done:
 		if shared.IsLinked() {
-			err := team.ReportToTeam()
+			err := team.ReportToTeam(false)
 			if err != nil {
 				log.WithError(err).Warn("failed to report to team")
 			}
