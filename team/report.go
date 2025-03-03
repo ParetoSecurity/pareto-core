@@ -79,7 +79,7 @@ func ReportToTeam() error {
 		Pathf("/api/v1/team/%s/device", shared.Config.TeamID).
 		Method(http.MethodPatch).
 		Transport(shared.HTTPTransport()).
-		Header("Authorization", "Bearer "+shared.Config.AuthToken).
+		Header("X-Device-Auth", "Bearer "+shared.Config.AuthToken).
 		BodyJSON(&report).
 		ToString(&res).
 		AddValidator(
