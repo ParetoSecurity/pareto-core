@@ -35,12 +35,10 @@ type InviteClaims struct {
 }
 
 var linkCmd = &cobra.Command{
-	Use:   "link --url <url>",
+	Use:   "link <url>",
 	Short: "Link team with this device",
 	Run: func(cc *cobra.Command, args []string) {
-		teamURL, _ := cc.Flags().GetString("url")
-		runLinkCommand(teamURL)
-
+		runLinkCommand(args[0])
 	},
 }
 

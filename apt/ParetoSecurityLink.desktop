@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=ParetoSecurity
-Exec=/usr/bin/paretosecurity link --url %u
+Exec=/usr/bin/paretosecurity link %u
 Type=Application
 NoDisplay=true
 MimeType=x-scheme-handler/paretosecurity;
