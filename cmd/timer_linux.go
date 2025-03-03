@@ -35,7 +35,7 @@ WantedBy=timers.target`
 func isUserTimerInstalled() bool {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		log.Fatalf("Failed to get home directory:", err)
+		WithError(err).Fatal("Failed to get home directory:", err)
 		return false
 	}
 
@@ -49,37 +49,37 @@ func isUserTimerInstalled() bool {
 func installUserTimer() {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		log.Fatalf("Failed to get home directory:", err)
+		log.WithError(err).Fatal("Failed to get home directory")
 		return
 	}
 
 	systemdPath := filepath.Join(homeDir, ".config", "systemd", "user")
 	if err := os.MkdirAll(systemdPath, 0755); err != nil {
-		log.Fatalf("Failed to create systemd user directory:", err)
+		log.WithError(err).Fatal("Failed to create systemd user directory")
 		return
 	}
 
 	// Create timer file
 	timerPath := filepath.Join(systemdPath, "pareto-coretimer")
 	if err := os.WriteFile(timerPath, []byte(timerContent), 0644); err != nil {
-		log.Fatalf("Failed to create timer file:", err)
+		log.WithError(err).Fatal("Failed to create timer file")
 		return
 	}
 
 	// Create service file
 	servicePath := filepath.Join(systemdPath, "pareto-coreservice")
 	if err := os.WriteFile(servicePath, []byte(localServiceContent), 0644); err != nil {
-		log.Fatalf("Failed to create service file:", err)
+		log.WithError(err).Fatal("Failed to create service file")
 		return
 	}
 
 	// Execute commands
-	if _, err := shared.RunCommand("systemctl", "--user", "daemon-reload"); err != nil {
-		log.Fatalf("Failed to reload systemd:", err)
+	if out, err := shared.RunCommand("systemctl", "--user", "daemon-reload"); err != nil {
+		log.WithError(err).WithField("out", out).Fatal("Failed to reload systemd")
 		return
 	}
-	if _, err := shared.RunCommand("systemctl", "--user", "enable", "--now", "pareto-coretimer"); err != nil {
-		log.Fatalf("Failed to enable and start timer:", err)
+	if out, err := shared.RunCommand("systemctl", "--user", "enable", "--now", "pareto-coretimer"); err != nil {
+		log.WithError(err).WithField("out", out).Fatal("Failed to enable and start timer")
 		return
 	}
 
@@ -115,8 +115,8 @@ func uninstallUserTimer() {
 		return
 	}
 	// Execute commands
-	if _, err := shared.RunCommand("systemctl", "--user", "daemon-reload"); err != nil {
-		log.WithError(err).Fatal("Failed to reload systemd")
+	if out, err := shared.RunCommand("systemctl", "--user", "daemon-reload"); err != nil {
+		log.WithError(err).WithField("out", out).Fatal("Failed to reload systemd")
 		return
 	}
 }
