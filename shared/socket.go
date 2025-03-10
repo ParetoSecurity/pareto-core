@@ -9,11 +9,11 @@ import (
 	"go.uber.org/ratelimit"
 )
 
-var SocketPath = "/var/run/pareto-core.sock"
+var SocketPath = "/var/run/paretosecurity.sock"
 var rateLimitCall = ratelimit.New(1)
 
 func IsSocketServicePresent() bool {
-	cmd := exec.Command("systemctl", "is-enabled", "--quiet", "pareto-coresocket")
+	cmd := exec.Command("systemctl", "is-enabled", "--quiet", "paretosecurity.socket")
 	err := cmd.Run()
 	return err == nil
 }

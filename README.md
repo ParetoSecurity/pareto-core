@@ -1,8 +1,8 @@
 # pareto-core
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/ParetoSecurity/pareto-core/badge)](https://scorecard.dev/viewer/?uri=github.com/ParetoSecurity/pareto-core)
-[![Integration Tests](https://github.com/ParetoSecurity/pareto-core/actions/workflows/build.yml/badge.svg)](https://github.com/ParetoSecurity/pareto-core/actions/workflows/build.yml)
-[![Unit Tests](https://github.com/ParetoSecurity/pareto-core/actions/workflows/unit.yml/badge.svg)](https://github.com/ParetoSecurity/pareto-core/actions/workflows/unit.yml)
-[![Release](https://github.com/ParetoSecurity/pareto-core/actions/workflows/release.yml/badge.svg)](https://github.com/ParetoSecurity/pareto-core/actions/workflows/release.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/ParetoSecurity/agent/badge)](https://scorecard.dev/viewer/?uri=github.com/ParetoSecurity/agent)
+[![Integration Tests](https://github.com/ParetoSecurity/agent/actions/workflows/build.yml/badge.svg)](https://github.com/ParetoSecurity/agent/actions/workflows/build.yml)
+[![Unit Tests](https://github.com/ParetoSecurity/agent/actions/workflows/unit.yml/badge.svg)](https://github.com/ParetoSecurity/agent/actions/workflows/unit.yml)
+[![Release](https://github.com/ParetoSecurity/agent/actions/workflows/release.yml/badge.svg)](https://github.com/ParetoSecurity/agent/actions/workflows/release.yml)
 
 
 Automatically audit your Linux machine for basic security hygiene.
@@ -40,7 +40,7 @@ paretosecurity check --json
 As root run:
 
 ```ShellSession
-$ sudo nix-channel --add https://github.com/paretosecurity/pareto-core/archive/main.tar.gz paretosecurity
+$ sudo nix-channel --add https://github.com/ParetoSecurity/agent/archive/main.tar.gz paretosecurity
 $ sudo nix-channel --update
 ```
 

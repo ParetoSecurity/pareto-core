@@ -13,9 +13,9 @@ import (
 	"os/exec"
 
 	"fyne.io/systray"
-	"github.com/ParetoSecurity/pareto-core/check"
-	claims "github.com/ParetoSecurity/pareto-core/claims"
-	shared "github.com/ParetoSecurity/pareto-core/shared"
+	"github.com/ParetoSecurity/agent/check"
+	claims "github.com/ParetoSecurity/agent/claims"
+	shared "github.com/ParetoSecurity/agent/shared"
 	"github.com/caarlos0/log"
 	"github.com/pkg/browser"
 	"github.com/samber/lo"

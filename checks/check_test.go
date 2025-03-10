@@ -3,7 +3,7 @@ package checks
 import (
 	"testing"
 
-	"github.com/ParetoSecurity/pareto-core/claims"
+	"github.com/ParetoSecurity/agent/claims"
 	"github.com/samber/lo"
 )
 

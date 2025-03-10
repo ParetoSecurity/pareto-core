@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"strings"
 
-	shared "github.com/ParetoSecurity/pareto-core/shared"
-	"github.com/ParetoSecurity/pareto-core/team"
+	shared "github.com/ParetoSecurity/agent/shared"
+	"github.com/ParetoSecurity/agent/team"
 	"github.com/caarlos0/log"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/samber/lo"

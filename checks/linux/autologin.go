@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/ParetoSecurity/pareto-core/shared"
+	"github.com/ParetoSecurity/agent/shared"
 )
 
 // Autologin checks for autologin misconfiguration.

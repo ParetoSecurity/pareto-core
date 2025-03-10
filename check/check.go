@@ -3,7 +3,7 @@ package check
 import (
 	"time"
 
-	"github.com/ParetoSecurity/pareto-core/shared"
+	"github.com/ParetoSecurity/agent/shared"
 )
 
 var AvailableChecks = 0

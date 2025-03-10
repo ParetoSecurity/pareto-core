@@ -3,7 +3,7 @@ package checks
 import (
 	"strings"
 
-	"github.com/ParetoSecurity/pareto-core/shared"
+	"github.com/ParetoSecurity/agent/shared"
 	"github.com/samber/lo"
 )
 

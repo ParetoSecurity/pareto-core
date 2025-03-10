@@ -22,20 +22,20 @@
   config = lib.mkIf config.paretosecurity.enable {
     environment.systemPackages = with pkgs; [config.paretosecurity.paretosecurityBin];
 
-    systemd.sockets."pareto-core" = {
+    systemd.sockets."paretosecurity" = {
       wantedBy = ["sockets.target"];
       socketConfig = {
-        ListenStream = "/var/run/pareto-core.sock";
+        ListenStream = "/var/run/paretosecurity.sock";
         SocketMode = "0666";
       };
     };
 
-    systemd.services."pareto-core" = {
-      requires = ["pareto-core.socket"];
-      after = ["pareto-core.socket"];
+    systemd.services."paretosecurity" = {
+      requires = ["paretosecurity.socket"];
+      after = ["paretosecurity.socket"];
       wantedBy = ["multi-user.target"];
       serviceConfig = {
-        ExecStart = ["${config.paretosecurity.paretosecurityBin}" "helper" "--verbose" "--socket" "/var/run/pareto-core.sock"];
+        ExecStart = ["${config.paretosecurity.paretosecurityBin}" "helper" "--verbose" "--socket" "/var/run/paretosecurity.sock"];
         User = "root";
         Group = "root";
         StandardInput = "socket";

@@ -5,7 +5,7 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/ParetoSecurity/pareto-core/shared"
+	"github.com/ParetoSecurity/agent/shared"
 	"github.com/caarlos0/log"
 	"github.com/elastic/go-sysinfo"
 	"github.com/spf13/cobra"

@@ -29,9 +29,9 @@ builds:
   - all=-trimpath=${GOPATH}
   ldflags:
   - -s -w
-  - -X github.com/ParetoSecurity/pareto-core/shared.Version={{.Version}}
-  - -X github.com/ParetoSecurity/pareto-core/shared.Commit={{.Commit}}
-  - -X github.com/ParetoSecurity/pareto-core/shared.Date={{.Date}}
+  - -X github.com/ParetoSecurity/agent/shared.Version={{.Version}}
+  - -X github.com/ParetoSecurity/agent/shared.Commit={{.Commit}}
+  - -X github.com/ParetoSecurity/agent/shared.Date={{.Date}}
   binary: paretosecurity
 
 archives:
@@ -43,7 +43,7 @@ archives:
     - zip
 nfpms:
 - vendor: niteo.co
-  homepage: https://github.com/paretosecurity/pareto-core
+  homepage: https://github.com/ParetoSecurity/agent
   maintainer: Niteo
   description: Automatically audit your Linux machine for basic security hygiene.
   license: GPL3

@@ -1,6 +1,6 @@
 package claims
 
-import "github.com/ParetoSecurity/pareto-core/check"
+import "github.com/ParetoSecurity/agent/check"
 
 type Claim struct {
 	Title  string

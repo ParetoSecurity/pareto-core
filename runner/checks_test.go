@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ParetoSecurity/pareto-core/check"
-	"github.com/ParetoSecurity/pareto-core/claims"
+	"github.com/ParetoSecurity/agent/check"
+	"github.com/ParetoSecurity/agent/claims"
 )
 
 // captureOutput redirects stdout and returns what was printed.

@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ParetoSecurity/pareto-core/claims"
+	"github.com/ParetoSecurity/agent/claims"
 )
 
 func TestRunHelper(t *testing.T) {

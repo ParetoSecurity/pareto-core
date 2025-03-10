@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ParetoSecurity/pareto-core/claims"
-	"github.com/ParetoSecurity/pareto-core/runner"
-	shared "github.com/ParetoSecurity/pareto-core/shared"
-	team "github.com/ParetoSecurity/pareto-core/team"
+	"github.com/ParetoSecurity/agent/claims"
+	"github.com/ParetoSecurity/agent/runner"
+	shared "github.com/ParetoSecurity/agent/shared"
+	team "github.com/ParetoSecurity/agent/team"
 	"github.com/caarlos0/log"
 	"github.com/spf13/cobra"
 )

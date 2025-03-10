@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/ParetoSecurity/pareto-core/check"
-	"github.com/ParetoSecurity/pareto-core/claims"
-	"github.com/ParetoSecurity/pareto-core/shared"
+	"github.com/ParetoSecurity/agent/check"
+	"github.com/ParetoSecurity/agent/claims"
+	"github.com/ParetoSecurity/agent/shared"
 	"github.com/caarlos0/log"
 	"github.com/pterm/pterm"
 )
