@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	sharedG "github.com/ParetoSecurity/pareto-core/shared"
+	sharedG "github.com/ParetoSecurity/agent/shared"
 )
 
 // KeyType represents the type of SSH key.

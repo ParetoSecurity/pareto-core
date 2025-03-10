@@ -12,20 +12,20 @@ pkgs.testers.runNixOSTest {
   nodes.machine = {pkgs, ...}: {
     environment.systemPackages = [flakePackage];
 
-    systemd.sockets."pareto-core" = {
+    systemd.sockets."paretosecurity" = {
       wantedBy = ["sockets.target"];
       socketConfig = {
-        ListenStream = "/var/run/pareto-core.sock";
+        ListenStream = "/var/run/paretosecurity.sock";
         SocketMode = "0666";
       };
     };
 
-    systemd.services."pareto-core" = {
-      requires = ["pareto-core.socket"];
-      after = ["pareto-core.socket"];
+    systemd.services."paretosecurity" = {
+      requires = ["paretosecurity.socket"];
+      after = ["paretosecurity.socket"];
       wantedBy = ["multi-user.target"];
       serviceConfig = {
-        ExecStart = ["${flakePackage}/bin/paretosecurity" "helper" "--verbose" "--socket" "/var/run/pareto-core.sock"];
+        ExecStart = ["${flakePackage}/bin/paretosecurity" "helper" "--verbose" "--socket" "/var/run/paretosecurity.sock"];
         User = "root";
         Group = "root";
         StandardInput = "socket";

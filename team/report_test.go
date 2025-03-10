@@ -4,8 +4,8 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/ParetoSecurity/pareto-core/check"
-	"github.com/ParetoSecurity/pareto-core/claims"
+	"github.com/ParetoSecurity/agent/check"
+	"github.com/ParetoSecurity/agent/claims"
 )
 
 // DummyCheck implements check.Check for testing.

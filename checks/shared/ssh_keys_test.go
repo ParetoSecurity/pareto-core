@@ -4,7 +4,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	sharedG "github.com/ParetoSecurity/pareto-core/shared"
+	sharedG "github.com/ParetoSecurity/agent/shared"
 )
 
 const (

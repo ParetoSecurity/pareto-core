@@ -1,9 +1,9 @@
 package claims
 
 import (
-	"github.com/ParetoSecurity/pareto-core/check"
-	shared "github.com/ParetoSecurity/pareto-core/checks/shared"
-	checks "github.com/ParetoSecurity/pareto-core/checks/windows"
+	"github.com/ParetoSecurity/agent/check"
+	shared "github.com/ParetoSecurity/agent/checks/shared"
+	checks "github.com/ParetoSecurity/agent/checks/windows"
 )
 
 var All = []Claim{

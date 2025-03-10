@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASE_URL="https://github.com/ParetoSecurity/pareto-core/releases/latest/download/paretosecurity_"
+BASE_URL="https://github.com/ParetoSecurity/agent/releases/latest/download/paretosecurity_"
 
 if [ "$EUID" -ne 0 ]; then
     echo "Please run as root"

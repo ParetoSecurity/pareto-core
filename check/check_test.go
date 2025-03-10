@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ParetoSecurity/pareto-core/shared"
+	"github.com/ParetoSecurity/agent/shared"
 )
 
 type MockCheck struct {
