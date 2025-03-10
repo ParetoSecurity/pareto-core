@@ -61,14 +61,14 @@ func addOptions() {
 		for range mauto.ClickedCh {
 			if isUserTimerInstalled() {
 				// execute the command to toggle auto start
-				err := exec.Command(shared.SelfExe(), "check", "--install").Run()
-				if err != nil {
+
+				if _, err := shared.RunCommand(shared.SelfExe(), "check", "--install"); err != nil {
 					log.WithError(err).Error("failed to run toggle-autostart command")
 				}
 			} else {
 				// execute the command to toggle auto start
-				err := exec.Command(shared.SelfExe(), "check", "--uninstall").Run()
-				if err != nil {
+
+				if _, err := shared.RunCommand(shared.SelfExe(), "check", "--uninstall"); err != nil {
 					log.WithError(err).Error("failed to run toggle-autostart command")
 				}
 			}
@@ -81,11 +81,10 @@ func addOptions() {
 	}()
 	go func() {
 		for range mlink.ClickedCh {
-			if shared.IsLinked() {
-				// execute the command in the system terminal
-				err := exec.Command(shared.SelfExe(), "link").Run()
-				if err != nil {
-					log.WithError(err).Error("failed to run link command")
+			if !shared.IsLinked() {
+				//open browser with help link
+				if err := browser.OpenURL("https://paretosecurity.com/docs/linux/link"); err != nil {
+					log.WithError(err).Error("failed to open help URL")
 				}
 			} else {
 				// execute the command in the system terminal

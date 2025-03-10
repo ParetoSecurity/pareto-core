@@ -40,7 +40,7 @@ func isUserTimerInstalled() bool {
 	}
 
 	systemdPath := filepath.Join(homeDir, ".config", "systemd", "user")
-	if _, err := os.Stat(filepath.Join(systemdPath, "pareto-coretimer")); err == nil {
+	if _, err := os.Stat(filepath.Join(systemdPath, "pareto-core.timer")); err == nil {
 		return true
 	}
 	return false
