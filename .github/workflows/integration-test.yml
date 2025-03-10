@@ -11,6 +11,8 @@ on:
       - 'test/integration/ubuntu-release.py'
       - 'test/integration/fedora-release.py'
       - '.github/workflows/integration-test.yml'
+  schedule:
+    - cron: '0 0 * * 0' # Runs every Sunday at midnight UTC
 
 jobs:
   integration:
