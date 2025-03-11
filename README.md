@@ -1,8 +1,17 @@
-# pareto-core
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/ParetoSecurity/agent/badge)](https://scorecard.dev/viewer/?uri=github.com/ParetoSecurity/agent)
-[![Integration Tests](https://github.com/ParetoSecurity/agent/actions/workflows/build.yml/badge.svg)](https://github.com/ParetoSecurity/agent/actions/workflows/build.yml)
-[![Unit Tests](https://github.com/ParetoSecurity/agent/actions/workflows/unit.yml/badge.svg)](https://github.com/ParetoSecurity/agent/actions/workflows/unit.yml)
-[![Release](https://github.com/ParetoSecurity/agent/actions/workflows/release.yml/badge.svg)](https://github.com/ParetoSecurity/agent/actions/workflows/release.yml)
+<h1 align="center">
+  <img src="https://avatars.githubusercontent.com/u/87074796?s=200&v=4" width = "200" height = "200">
+  <br />
+  ParetoSecurity
+</h1>
+
+<p align="center">
+<img src="https://img.shields.io/github/downloads/ParetoSecurity/agent/total?label=Downloads" alt="Downloads">
+<img src="https://api.scorecard.dev/projects/github.com/ParetoSecurity/agent/badge" alt="OpenSSF Scorecard">
+<img src="https://github.com/ParetoSecurity/agent/actions/workflows/build.yml/badge.svg" alt="Integration Tests">
+<img src="https://github.com/ParetoSecurity/agent/actions/workflows/unit.yml/badge.svg" alt="Unit Tests">
+<img src="https://github.com/ParetoSecurity/agent/actions/workflows/release.yml/badge.svg" alt="Release">
+</p>
+
 
 
 Automatically audit your Linux machine for basic security hygiene.
