@@ -8,7 +8,7 @@ import (
 var verbose bool
 
 var rootCmd = &cobra.Command{
-	Use:   "pareto [command]",
+	Use:   "paretosecurity [command]",
 	Short: "Pareto Security CLI",
 	Long: `Pareto Security CLI is a tool for running and reporting audits 
 to paretosecurity.com.`,
