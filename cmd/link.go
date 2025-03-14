@@ -64,7 +64,7 @@ func runLinkCommand(teamURL string) error {
 	}
 	if shared.IsLinked() {
 		log.Warn("Already linked to a team")
-		log.Warn("Unlink first with `pareto unlink`")
+		log.Warn("Unlink first with `paretosecurity unlink`")
 		log.Infof("Team ID: %s", shared.Config.TeamID)
 		return errors.New("already linked to a team")
 	}
