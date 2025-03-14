@@ -50,14 +50,19 @@ jobs:
         authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
     - run: devenv test -d
     - name: Archive code coverage results
+      if: github.event_name == 'pull_request'
       uses: actions/upload-artifact@v4
       with:
         name: code-coverage
         path: coverage.txt # Make sure to use the same file name you chose for the "-coverprofile" in the "Test" step
-    - name: Archive test results
-      uses: actions/upload-artifact@v4
+    - uses: ncruces/go-coverage-report@v0
+      if: github.ref == 'refs/heads/main'
       with:
-        path: checks/shared/fixtures
+        report: true
+        chart: true
+        amend: true
+        coverage-file: coverage.txt
+      continue-on-error: true
   code_coverage:
     name: "Code coverage report"
     if: github.event_name == 'pull_request'
