@@ -6,7 +6,10 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
+
+	"github.com/ParetoSecurity/agent/shared"
 )
 
 // checkPortMock is a mock function used for testing purposes. It simulates
@@ -117,4 +120,25 @@ func (m mockDirEntry) Info() (os.FileInfo, error) {
 		return m.info, nil
 	}
 	return nil, errors.New("file info not available")
+}
+
+// convertCommandMapToMocks converts a map of command strings to outputs
+// into a slice of RunCommandMock structs
+func convertCommandMapToMocks(commandMap map[string]string) []shared.RunCommandMock {
+	mocks := []shared.RunCommandMock{}
+	for cmd, output := range commandMap {
+		parts := strings.Split(cmd, " ")
+		command := parts[0]
+		args := []string{}
+		if len(parts) > 1 {
+			args = parts[1:]
+		}
+		mocks = append(mocks, shared.RunCommandMock{
+			Command: command,
+			Args:    args,
+			Out:     output,
+			Err:     nil,
+		})
+	}
+	return mocks
 }

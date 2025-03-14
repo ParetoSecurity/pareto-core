@@ -68,9 +68,9 @@ func TestAutologin_Run(t *testing.T) {
 			// Mock shared.ReadFile
 			shared.ReadFileMocks = tt.mockFiles
 			// Mock shared.RunCommand
-			shared.RunCommandMocks = map[string]string{
+			shared.RunCommandMocks = convertCommandMapToMocks(map[string]string{
 				tt.mockCommand: tt.mockCommandOut,
-			}
+			})
 
 			a := &Autologin{}
 			err := a.Run()

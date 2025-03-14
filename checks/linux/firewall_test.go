@@ -36,9 +36,9 @@ func TestCheckUFW(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			shared.RunCommandMocks = map[string]string{
+			shared.RunCommandMocks = convertCommandMapToMocks(map[string]string{
 				"ufw status": tt.mockOutput,
-			}
+			})
 			f := &Firewall{}
 			result := f.checkUFW()
 			assert.Equal(t, tt.expectedResult, result)
@@ -75,9 +75,9 @@ func TestCheckFirewalld(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			shared.RunCommandMocks = map[string]string{
+			shared.RunCommandMocks = convertCommandMapToMocks(map[string]string{
 				"systemctl is-active firewalld": tt.mockOutput,
-			}
+			})
 
 			f := &Firewall{}
 			result := f.checkFirewalld()
@@ -121,10 +121,10 @@ func TestFirewall_Run(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			shared.RunCommandMocks = map[string]string{
+			shared.RunCommandMocks = convertCommandMapToMocks(map[string]string{
 				"ufw status":                    tt.mockUFWOutput,
 				"systemctl is-active firewalld": tt.mockFirewalldOutput,
-			}
+			})
 
 			f := &Firewall{}
 			err := f.Run()

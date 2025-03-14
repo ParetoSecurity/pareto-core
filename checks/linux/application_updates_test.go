@@ -11,30 +11,30 @@ func TestCheckUpdates(t *testing.T) {
 
 	tests := []struct {
 		name           string
-		setupMocks     map[string]string
+		setupMocks     []shared.RunCommandMock
 		expectedPassed bool
 		expectedDetail string
 	}{
 		{
 			name: "All up to date",
-			setupMocks: map[string]string{
-				"flatpak remote-ls --updates": "",
-				"apt list --upgradable":       "",
-				"dnf check-update --quiet":    "",
-				"pacman -Qu":                  "",
-				"snap refresh --list":         "",
+			setupMocks: []shared.RunCommandMock{
+				{Command: "flatpak", Args: []string{"remote-ls", "--updates"}, Out: "", Err: nil},
+				{Command: "apt", Args: []string{"list", "--upgradable"}, Out: "", Err: nil},
+				{Command: "dnf", Args: []string{"check-update", "--quiet"}, Out: "", Err: nil},
+				{Command: "pacman", Args: []string{"-Qu"}, Out: "", Err: nil},
+				{Command: "snap", Args: []string{"refresh", "--list"}, Out: "", Err: nil},
 			},
 			expectedPassed: true,
 			expectedDetail: "All packages are up to date",
 		},
 		{
 			name: "Updates available",
-			setupMocks: map[string]string{
-				"flatpak remote-ls --updates": "some updates",
-				"apt list --upgradable":       "upgradable, upgradable",
-				"dnf check-update --quiet":    "some updates",
-				"pacman -Qu":                  "some updates",
-				"snap refresh --list":         "some updates",
+			setupMocks: []shared.RunCommandMock{
+				{Command: "flatpak", Args: []string{"remote-ls", "--updates"}, Out: "some updates", Err: nil},
+				{Command: "apt", Args: []string{"list", "--upgradable"}, Out: "upgradable, upgradable", Err: nil},
+				{Command: "dnf", Args: []string{"check-update", "--quiet"}, Out: "some updates", Err: nil},
+				{Command: "pacman", Args: []string{"-Qu"}, Out: "some updates", Err: nil},
+				{Command: "snap", Args: []string{"refresh", "--list"}, Out: "some updates", Err: nil},
 			},
 			expectedPassed: false,
 			expectedDetail: "Updates available for: Flatpak, APT, Pacman, Snap",
@@ -60,30 +60,30 @@ func TestCheckUpdates(t *testing.T) {
 func TestApplicationUpdates_Run(t *testing.T) {
 	tests := []struct {
 		name           string
-		setupMocks     map[string]string
+		setupMocks     []shared.RunCommandMock
 		expectedPassed bool
 		expectedDetail string
 	}{
 		{
 			name: "All up to date",
-			setupMocks: map[string]string{
-				"flatpak remote-ls --updates": "",
-				"apt list --upgradable":       "",
-				"dnf check-update --quiet":    "",
-				"pacman -Qu":                  "",
-				"snap refresh --list":         "",
+			setupMocks: []shared.RunCommandMock{
+				{Command: "flatpak", Args: []string{"remote-ls", "--updates"}, Out: "", Err: nil},
+				{Command: "apt", Args: []string{"list", "--upgradable"}, Out: "", Err: nil},
+				{Command: "dnf", Args: []string{"check-update", "--quiet"}, Out: "", Err: nil},
+				{Command: "pacman", Args: []string{"-Qu"}, Out: "", Err: nil},
+				{Command: "snap", Args: []string{"refresh", "--list"}, Out: "", Err: nil},
 			},
 			expectedPassed: true,
 			expectedDetail: "All packages are up to date",
 		},
 		{
 			name: "Updates available",
-			setupMocks: map[string]string{
-				"flatpak remote-ls --updates": "some updates",
-				"apt list --upgradable":       "upgradable, upgradable",
-				"dnf check-update --quiet":    "some updates",
-				"pacman -Qu":                  "some updates",
-				"snap refresh --list":         "some updates",
+			setupMocks: []shared.RunCommandMock{
+				{Command: "flatpak", Args: []string{"remote-ls", "--updates"}, Out: "some updates", Err: nil},
+				{Command: "apt", Args: []string{"list", "--upgradable"}, Out: "upgradable, upgradable", Err: nil},
+				{Command: "dnf", Args: []string{"check-update", "--quiet"}, Out: "some updates", Err: nil},
+				{Command: "pacman", Args: []string{"-Qu"}, Out: "some updates", Err: nil},
+				{Command: "snap", Args: []string{"refresh", "--list"}, Out: "some updates", Err: nil},
 			},
 			expectedPassed: false,
 			expectedDetail: "Updates available for: Flatpak, APT, Pacman, Snap",

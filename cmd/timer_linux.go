@@ -11,6 +11,9 @@ import (
 	"github.com/caarlos0/log"
 )
 
+// Define a variable to hold the original os.UserHomeDir function
+var userHomeDir = os.UserHomeDir
+
 const timerContent = `[Unit]
 Description=Timer for pareto-core hourly execution
 
@@ -33,7 +36,7 @@ StandardInput=null
 WantedBy=timers.target`
 
 func isUserTimerInstalled() bool {
-	homeDir, err := os.UserHomeDir()
+	homeDir, err := userHomeDir()
 	if err != nil {
 		log.WithError(err).Fatal("Failed to get home directory")
 		return false
@@ -47,7 +50,7 @@ func isUserTimerInstalled() bool {
 }
 
 func installUserTimer() {
-	homeDir, err := os.UserHomeDir()
+	homeDir, err := userHomeDir()
 	if err != nil {
 		log.WithError(err).Fatal("Failed to get home directory")
 		return
@@ -89,7 +92,7 @@ func installUserTimer() {
 
 func uninstallUserTimer() {
 	// Logic to uninstall the user timer
-	homeDir, err := os.UserHomeDir()
+	homeDir, err := userHomeDir()
 	if err != nil {
 		log.WithError(err).Fatal("Failed to get home directory:")
 		return

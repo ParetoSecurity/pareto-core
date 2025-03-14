@@ -36,8 +36,13 @@ func TestCheckKDE(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			shared.RunCommandMocks = map[string]string{
-				"kreadconfig5 --file kscreenlockerrc --group Daemon --key Autolock": tt.commandOut,
+			shared.RunCommandMocks = []shared.RunCommandMock{
+				{
+					Command: "kreadconfig5",
+					Args:    []string{"--file", "kscreenlockerrc", "--group", "Daemon", "--key", "Autolock"},
+					Out:     tt.commandOut,
+					Err:     tt.commandErr,
+				},
 			}
 
 			f := &PasswordToUnlock{}
@@ -76,8 +81,13 @@ func TestCheckGnome(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			shared.RunCommandMocks = map[string]string{
-				"gsettings get org.gnome.desktop.screensaver lock-enabled": tt.commandOut,
+			shared.RunCommandMocks = []shared.RunCommandMock{
+				{
+					Command: "gsettings",
+					Args:    []string{"get", "org.gnome.desktop.screensaver", "lock-enabled"},
+					Out:     tt.commandOut,
+					Err:     tt.commandErr,
+				},
 			}
 
 			f := &PasswordToUnlock{}
@@ -122,7 +132,7 @@ func TestPasswordToUnlock_Run(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			shared.RunCommandMocks = tt.mockCommands
+			shared.RunCommandMocks = convertCommandMapToMocks(tt.mockCommands)
 
 			f := &PasswordToUnlock{}
 			err := f.Run()
