@@ -52,7 +52,7 @@ func TestCheckSSHConfig(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			shared.RunCommandMocks = tt.setupMocks
+			shared.RunCommandMocks = convertCommandMapToMocks(tt.setupMocks)
 			lookPathMock = func(file string) (string, error) {
 				return file, nil
 			}
@@ -120,7 +120,7 @@ func TestIsRunnable(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			shared.RunCommandMocks = tt.setupMocks
+			shared.RunCommandMocks = convertCommandMapToMocks(tt.setupMocks)
 			lookPathMock = func(file string) (string, error) {
 				return file, nil
 			}

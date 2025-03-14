@@ -75,11 +75,10 @@ func TestInstallUserTimer(t *testing.T) {
 	defer func() { userHomeDir = originalUserHomeDir }()
 
 	// Mock shared.RunCommand to prevent actual systemctl calls
-	shared.RunCommandMocks = map[string]string{
-		"systemctl --user daemon-reload":                  "",
-		"systemctl --user enable --now pareto-core.timer": "",
+	shared.RunCommandMocks = []shared.RunCommandMock{
+		{Command: "systemctl", Args: []string{"--user", "daemon-reload"}, Out: "", Err: nil},
+		{Command: "systemctl", Args: []string{"--user", "enable", "--now", "pareto-core.timer"}, Out: "", Err: nil},
 	}
-
 	// Call the function to test
 	installUserTimer()
 
@@ -130,9 +129,9 @@ func TestUninstallUserTimer(t *testing.T) {
 	defer func() { userHomeDir = originalUserHomeDir }()
 
 	// Mock shared.RunCommand to prevent actual systemctl calls
-	shared.RunCommandMocks = map[string]string{
-		"systemctl --user daemon-reload":                   "",
-		"systemctl --user disable --now pareto-core.timer": "",
+	shared.RunCommandMocks = []shared.RunCommandMock{
+		{Command: "systemctl", Args: []string{"--user", "daemon-reload"}, Out: "", Err: nil},
+		{Command: "systemctl", Args: []string{"--user", "disable", "--now", "pareto-core.timer"}, Out: "", Err: nil},
 	}
 	// Call the function to test
 	uninstallUserTimer()

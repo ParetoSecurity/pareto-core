@@ -107,7 +107,7 @@ func TestPasswordManagerCheck_Run_Linux(t *testing.T) {
 			shared.SetCache("pkg_flatpak", "", 0)
 			shared.SetCache("pkg_pacman", "", 0)
 
-			shared.RunCommandMocks = tt.mockCommands
+			shared.RunCommandMocks = convertCommandMapToMocks(tt.mockCommands)
 
 			pmc := &PasswordManagerCheck{}
 			status := pmc.isManagerInstalled()

@@ -36,10 +36,10 @@ func TestDockerAccess_Run(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			shared.RunCommandMocks = map[string]string{
+			shared.RunCommandMocks = convertCommandMapToMocks(map[string]string{
 				"docker version": "1.0.0",
 				"docker info --format {{.SecurityOptions}}": tt.commandOutput,
-			}
+			})
 			dockerAccess := &DockerAccess{}
 			err := dockerAccess.Run()
 
@@ -73,9 +73,9 @@ func TestDockerAccess_IsRunnable(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			shared.RunCommandMocks = map[string]string{
+			shared.RunCommandMocks = convertCommandMapToMocks(map[string]string{
 				"docker version": tt.commandOutput,
-			}
+			})
 			dockerAccess := &DockerAccess{}
 			result := dockerAccess.IsRunnable()
 

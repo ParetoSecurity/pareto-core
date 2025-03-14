@@ -101,8 +101,8 @@ func TestIsKeyStrong(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			// Override RunCommand to simulate different outputs.
-			sharedG.RunCommandMocks = map[string]string{
-				"ssh-keygen -l -f dummy/path": tc.output,
+			sharedG.RunCommandMocks = []sharedG.RunCommandMock{
+				{Command: "ssh-keygen", Args: []string{"-l", "-f", "dummy/path"}, Out: tc.output, Err: tc.err},
 			}
 			result := algo.isKeyStrong("dummy/path")
 			if result != tc.expectPass {

@@ -25,8 +25,8 @@ func TestIsSocketServicePresent(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Setup mock
-			RunCommandMocks = map[string]string{
-				"systemctl is-enabled pareto-socket": tt.mockOutput,
+			RunCommandMocks = []RunCommandMock{
+				{Command: "systemctl", Args: []string{"is-enabled", "pareto-socket"}, Out: tt.mockOutput, Err: nil},
 			}
 
 			// Run test
