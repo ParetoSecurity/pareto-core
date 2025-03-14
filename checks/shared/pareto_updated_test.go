@@ -2,10 +2,16 @@ package shared
 
 import (
 	"testing"
+
+	"github.com/h2non/gock"
 )
 
 func TestParetoUpdated_Run(t *testing.T) {
+	defer gock.Off() // Flush pending mocks after test execution
 
+	gock.New("https://paretosecurity.com/api/updates").
+		Reply(200).
+		JSON([]map[string]string{{"tag_name": "1.7.91"}})
 	check := &ParetoUpdated{}
 	err := check.Run()
 

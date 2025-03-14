@@ -1,4 +1,0 @@
-GET /repos/ParetoSecurity/pareto-macos/releases HTTP/0.0
-Host: api.github.com
-Referer: https://paretosecurity.com/api/updates?app=auditor&distribution=app-live-opensource&os_version=test-os+test-os-version&platform=macos&uuid=test-uuid&version=dev
-

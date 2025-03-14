@@ -22,6 +22,7 @@ require (
 	github.com/elastic/go-windows v1.0.2 // indirect
 	github.com/elliotchance/orderedmap/v2 v2.7.0 // indirect
 	github.com/gookit/color v1.5.4 // indirect
+	github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 // indirect
 	github.com/lithammer/fuzzysearch v1.1.8 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
@@ -46,6 +47,7 @@ require (
 	github.com/elastic/go-sysinfo v1.15.1
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
+	github.com/h2non/gock v1.2.0
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/muesli/termenv v0.16.0 // indirect
 	github.com/pelletier/go-toml v1.9.5

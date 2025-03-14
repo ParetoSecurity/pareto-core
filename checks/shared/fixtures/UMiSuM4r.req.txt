@@ -1,3 +1,0 @@
-GET /api/updates?app=auditor&distribution=app-live-opensource&os_version=test-os+test-os-version&platform=macos&uuid=test-uuid&version=dev HTTP/1.1
-Host: paretosecurity.com
-

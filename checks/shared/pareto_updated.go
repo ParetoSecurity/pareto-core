@@ -3,7 +3,6 @@ package shared
 import (
 	"context"
 	"runtime"
-	"time"
 
 	"github.com/ParetoSecurity/agent/shared"
 	"github.com/caarlos0/log"
@@ -11,13 +10,7 @@ import (
 )
 
 type ParetoReleases []struct {
-	TagName         string    `json:"tag_name,omitempty"`
-	TargetCommitish string    `json:"target_commitish,omitempty"`
-	Name            string    `json:"name,omitempty"`
-	Draft           bool      `json:"draft,omitempty"`
-	Prerelease      bool      `json:"prerelease,omitempty"`
-	CreatedAt       time.Time `json:"created_at,omitempty"`
-	PublishedAt     time.Time `json:"published_at,omitempty"`
+	TagName string `json:"tag_name,omitempty"`
 }
 
 type ParetoUpdated struct {
@@ -55,7 +48,6 @@ func (f *ParetoUpdated) Run() error {
 			}
 			return "app-live-opensource"
 		}()).
-		Transport(shared.HTTPTransport()).
 		ToJSON(&res).
 		Fetch(context.Background())
 	if err != nil {

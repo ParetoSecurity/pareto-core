@@ -1,4 +1,0 @@
-GET /repositories/897875806/releases HTTP/0.0
-Host: api.github.com
-Referer: https://api.github.com/repos/ParetoSecurity/pareto-linux/releases
-

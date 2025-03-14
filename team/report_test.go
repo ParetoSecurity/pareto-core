@@ -6,6 +6,8 @@ import (
 
 	"github.com/ParetoSecurity/agent/check"
 	"github.com/ParetoSecurity/agent/claims"
+	shared "github.com/ParetoSecurity/agent/shared"
+	"github.com/h2non/gock"
 )
 
 // DummyCheck implements check.Check for testing.
@@ -110,4 +112,76 @@ func TestNowReportCounts(t *testing.T) {
 		t.Errorf("Expected SignificantChange to have length 64, got %d", len(report.SignificantChange))
 	}
 
+}
+
+func TestReportToTeam(t *testing.T) {
+	defer gock.Off()
+
+	shared.Config.TeamID = "testTeam"
+	shared.Config.AuthToken = "testToken"
+
+	// Test initial report (PUT request).
+	gock.New(reportURL).
+		Put("/api/v1/team/" + shared.Config.TeamID + "/device").
+		Reply(200).
+		BodyString(`{"status": "ok"}`)
+
+	err := ReportToTeam(true)
+	if err != nil {
+		t.Fatalf("ReportToTeam (initial) failed: %v", err)
+	}
+
+	if !gock.IsDone() {
+		t.Errorf("pending mocks: %v", gock.Pending())
+	}
+
+	gock.Clean()
+
+	// Test subsequent report (PATCH request).
+	gock.New(reportURL).
+		Patch("/api/v1/team/" + shared.Config.TeamID + "/device").
+		Reply(200).
+		BodyString(`{"status": "ok"}`)
+
+	err = ReportToTeam(false)
+	if err != nil {
+		t.Fatalf("ReportToTeam (subsequent) failed: %v", err)
+	}
+
+	if !gock.IsDone() {
+		t.Errorf("pending mocks: %v", gock.Pending())
+	}
+
+	gock.Clean()
+
+	// Test API error handling.
+	gock.New(reportURL).
+		Patch("/api/v1/team/" + shared.Config.TeamID + "/device").
+		Reply(500).
+		BodyString(`{"error": "server error"}`)
+
+	err = ReportToTeam(false)
+	if err == nil {
+		t.Fatalf("ReportToTeam (API error) should have failed, but didn't")
+	}
+
+	if !gock.IsDone() {
+		t.Errorf("pending mocks: %v", gock.Pending())
+	}
+	gock.Clean()
+
+	// Test request failure
+	gock.New(reportURL).
+		Patch("/api/v1/team/" + shared.Config.TeamID + "/device").
+		ReplyError(err)
+
+	err = ReportToTeam(false)
+	if err == nil {
+		t.Fatalf("ReportToTeam (Request  error) should have failed, but didn't")
+	}
+
+	if !gock.IsDone() {
+		t.Errorf("pending mocks: %v", gock.Pending())
+	}
+	gock.Clean()
 }
