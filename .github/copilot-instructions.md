@@ -18,3 +18,9 @@
 - Split into multiple responses if one response isn't enough to answer the question.
 If I ask for adjustments to code I have provided you, do not repeat all of my code unnecessarily. Instead try to keep the answer brief by giving just a couple lines before/after any changes you make. Multiple code blocks are ok.
 - When writing test that include http use gock for mocking
+- WhenMocking shared.RunCommand use follwoing mock :
+```
+shared.RunCommandMocks = map[string]string{
+
+}
+```

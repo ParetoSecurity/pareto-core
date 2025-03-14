@@ -3,7 +3,6 @@ package shared
 import (
 	"encoding/json"
 	"net"
-	"os/exec"
 
 	"github.com/caarlos0/log"
 	"go.uber.org/ratelimit"
@@ -13,8 +12,7 @@ var SocketPath = "/var/run/paretosecurity.sock"
 var rateLimitCall = ratelimit.New(1)
 
 func IsSocketServicePresent() bool {
-	cmd := exec.Command("systemctl", "is-enabled", "--quiet", "paretosecurity.socket")
-	err := cmd.Run()
+	_, err := RunCommand("systemctl", "is-enabled", "--quiet", "paretosecurity.socket")
 	return err == nil
 }
 
