@@ -9,7 +9,9 @@ import (
 
 func main() {
 	if err := shared.LoadConfig(); err != nil {
-		log.WithError(err).Warn("failed to load config")
+		if !shared.IsRoot() {
+			log.WithError(err).Warn("failed to load config")
+		}
 	}
 	cmd.Execute()
 }
