@@ -5,6 +5,7 @@
 </h1>
 
 <p align="center">
+<a href="https://raw.githack.com/wiki/ParetoSecurity/agent/coverage.html"><img src="https://github.com/ParetoSecurity/agent/wiki/coverage.svg" alt="OpenSSF Scorecard"></a>
 <img src="https://img.shields.io/github/downloads/ParetoSecurity/agent/total?label=Downloads" alt="Downloads">
 <img src="https://api.scorecard.dev/projects/github.com/ParetoSecurity/agent/badge" alt="OpenSSF Scorecard">
 <img src="https://github.com/ParetoSecurity/agent/actions/workflows/build.yml/badge.svg" alt="Integration Tests">
