@@ -55,7 +55,7 @@ func createSafeHTTPClient() *http.Client {
 	// Wrap the transport to insert the User-Agent header
 	client.Transport = &userAgentTransport{
 		Transport: customTransport,
-		agent:     fmt.Sprintf("Pareto Security/%s (Linux; build:%s)", Version, Commit),
+		agent:     fmt.Sprintf("Pareto Security/%s (build:%s)", Version, Commit),
 	}
 
 	return client
@@ -67,7 +67,7 @@ func transport() http.RoundTripper {
 		return reqtest.Caching(baseTrans, "fixtures")
 	}
 	logger := func(req *http.Request, res *http.Response, err error, d time.Duration) {
-		log.Infof("method=%q url=%q err=%v status=%q duration=%v\n",
+		log.Debugf("method=%q url=%q err=%v status=%q duration=%v\n",
 			req.Method, req.URL, err, res.Status, d.Round(1*time.Second))
 	}
 

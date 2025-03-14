@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"path/filepath"
 	"runtime"
 	"time"
 
@@ -21,6 +22,45 @@ import (
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 )
+
+// lockFile holds the OS file descriptor for the lock file
+var lockFile *os.File
+
+// acquireLock attempts to create a lock file to ensure only one instance runs
+// returns true if lock was acquired, false otherwise
+func acquireLock() bool {
+	lockFilePath := filepath.Join(os.TempDir(), "pareto-security.lock")
+	var err error
+
+	// Attempt to create the lock file with O_EXCL flag to ensure it fails if file exists
+	lockFile, err = os.OpenFile(lockFilePath, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
+	if err != nil {
+		log.WithError(err).Warn("Another instance appears to be running")
+		return false
+	}
+
+	// Write PID to lock file
+	_, err = fmt.Fprintf(lockFile, "%d", os.Getpid())
+	if err != nil {
+		log.WithError(err).Error("Failed to write PID to lock file")
+		// Close and remove lock file on error
+		lockFile.Close()
+		os.Remove(lockFilePath)
+		return false
+	}
+
+	return true
+}
+
+// releaseLock closes and removes the lock file
+func releaseLock() {
+	if lockFile != nil {
+		lockPath := lockFile.Name()
+		lockFile.Close()
+		os.Remove(lockPath)
+		log.Info("Lock file released")
+	}
+}
 
 func addQuitItem() {
 	mQuit := systray.AddMenuItem("Quit", "Quit the Pareto Security")
@@ -215,8 +255,16 @@ var menubarCmd = &cobra.Command{
 	Use:   "menubar",
 	Short: "Show the checks in the menubar",
 	Run: func(cc *cobra.Command, args []string) {
+		// Try to acquire lock, exit if another instance is running
+		if !acquireLock() {
+			log.Error("Another instance of Pareto Security is already running")
+			os.Exit(1)
+			return
+		}
+
 		onExit := func() {
 			log.Info("Exiting...")
+			releaseLock()
 		}
 
 		systray.Run(onReady, onExit)
