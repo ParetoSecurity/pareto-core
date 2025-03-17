@@ -24,7 +24,6 @@ func (m *MockCheck) Status() string        { return "Status" }
 func (m *MockCheck) RequiresRoot() bool    { return false }
 
 func TestRegister(t *testing.T) {
-	shared.Config.Checks = make(map[string]shared.CheckStatus)
 
 	mockCheck := &MockCheck{
 		uuid:       "1234",
