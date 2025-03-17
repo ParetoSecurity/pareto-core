@@ -2,10 +2,8 @@ package checks
 
 import (
 	"fmt"
-	"net"
-	"testing"
-	"time"
 
+	sharedchecks "github.com/ParetoSecurity/agent/checks/shared"
 	"github.com/caarlos0/log"
 )
 
@@ -17,41 +15,6 @@ type Sharing struct {
 // Name returns the name of the check
 func (f *Sharing) Name() string {
 	return "File Sharing is disabled"
-}
-
-// checkPort tests if a port is open
-func (f *Sharing) checkPort(port int, proto string) bool {
-
-	if testing.Testing() {
-		return checkPortMock(port, proto)
-	}
-
-	addrs, err := net.InterfaceAddrs()
-	if err != nil {
-		return false
-	}
-
-	for _, addr := range addrs {
-		ip, _, err := net.ParseCIDR(addr.String())
-		if err != nil {
-			continue
-		}
-
-		// Filter out 127.0.0.1
-		if ip.IsLoopback() {
-			continue
-		}
-
-		address := fmt.Sprintf("%s:%d", ip.String(), port)
-		conn, err := net.DialTimeout(proto, address, 1*time.Second)
-		if err == nil {
-			defer conn.Close()
-			log.WithField("check", f.Name()).WithField("address:"+proto, address).WithField("state", true).Debug("Checking port")
-			return true
-		}
-	}
-
-	return false
 }
 
 // Run executes the check
@@ -70,7 +33,7 @@ func (f *Sharing) Run() error {
 	}
 
 	for port, service := range shareServices {
-		if f.checkPort(port, "tcp") {
+		if sharedchecks.CheckPort(port, "tcp") {
 			f.passed = false
 			log.WithField("check", f.Name()).WithField("port:tcp", port).WithField("service", service).Debug("Port open")
 			f.ports[port] = service

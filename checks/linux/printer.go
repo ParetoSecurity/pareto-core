@@ -2,10 +2,8 @@ package checks
 
 import (
 	"fmt"
-	"net"
-	"testing"
-	"time"
 
+	sharedchecks "github.com/ParetoSecurity/agent/checks/shared"
 	"github.com/caarlos0/log"
 )
 
@@ -19,41 +17,6 @@ func (f *Printer) Name() string {
 	return "Sharing printers is off"
 }
 
-// checkPort tests if a port is open
-func (f *Printer) checkPort(port int, proto string) bool {
-
-	if testing.Testing() {
-		return checkPortMock(port, proto)
-	}
-
-	addrs, err := net.InterfaceAddrs()
-	if err != nil {
-		return false
-	}
-
-	for _, addr := range addrs {
-		ip, _, err := net.ParseCIDR(addr.String())
-		if err != nil {
-			continue
-		}
-
-		// Filter out 127.0.0.1
-		if ip.IsLoopback() {
-			continue
-		}
-
-		address := fmt.Sprintf("%s:%d", ip.String(), port)
-		conn, err := net.DialTimeout(proto, address, 1*time.Second)
-		if err == nil {
-			defer conn.Close()
-			log.WithField("check", f.Name()).WithField("address", address).WithField("state", true).Debug("Checking port")
-			return true
-		}
-	}
-
-	return false
-}
-
 // Run executes the check
 func (f *Printer) Run() error {
 	f.passed = true
@@ -65,7 +28,7 @@ func (f *Printer) Run() error {
 	}
 
 	for port, service := range printService {
-		if f.checkPort(port, "tcp") {
+		if sharedchecks.CheckPort(port, "tcp") {
 			log.WithField("check", f.Name()).WithField("port", port).WithField("service", service).Debug("Port open")
 			f.passed = false
 			f.ports[port] = service
