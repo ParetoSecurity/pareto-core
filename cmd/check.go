@@ -88,6 +88,12 @@ func checkCommand(jsonOutput bool, schemaOutput bool, installFlag bool, uninstal
 		if !isUserTimerInstalled() {
 			log.Info("To ensure your system is checked every hour, please run `paretosecurity check --install` to set it up.")
 		}
+
+		// if checks failed, exit with a non-zero status code
+		if !shared.AllTestsPassed() {
+			os.Exit(1)
+		}
+
 	case <-ctx.Done():
 		log.Warn("Check run timed out")
 		os.Exit(1)

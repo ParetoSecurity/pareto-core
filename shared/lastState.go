@@ -48,6 +48,19 @@ func CommitLastState() error {
 	return encoder.Encode(states)
 }
 
+// AllTestsPassed returns true if all checks have passed.
+func AllTestsPassed() bool {
+	mutex.RLock()
+	defer mutex.RUnlock()
+
+	for _, state := range states {
+		if !state.State {
+			return false
+		}
+	}
+	return true
+}
+
 // UpdateState updates the LastState struct in the in-memory map and commits to the TOML file.
 func UpdateLastState(newState LastState) {
 	mutex.Lock()
