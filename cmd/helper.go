@@ -17,8 +17,7 @@ func runHelper() {
 	file := os.NewFile(0, "socket")
 	listener, err := net.FileListener(file)
 	if err != nil {
-		log.Error("Failed to create listener, not running in systemd context")
-		os.Exit(1)
+		log.WithError(err).Fatal("Failed to create listener, not running in systemd context")
 	}
 	defer listener.Close()
 	log.WithField("socket", shared.SocketPath).WithField("version", shared.Version).Info("Listening on socket")
@@ -26,7 +25,7 @@ func runHelper() {
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
-			log.Debugf("Failed to accept connection: %v\n", err)
+			log.WithError(err).Warn("Failed to accept connection")
 			continue
 		}
 
@@ -35,6 +34,13 @@ func runHelper() {
 	}
 }
 
+// handleConnection handles an incoming network connection.
+// It reads input from the connection, processes the input to run checks,
+// and sends back the status of the checks as a JSON response.
+//
+// The input is expected to be a JSON object containing a "uuid" key.
+// The function will look for checks that are runnable, require root,
+// and match the provided UUID. It will run those checks and collect their status.
 func handleConnection(conn net.Conn) {
 	defer conn.Close()
 	log.Info("Connection received")
