@@ -3,6 +3,7 @@ package shared
 import (
 	"os"
 	"path/filepath"
+	"testing"
 	"time"
 
 	"github.com/caarlos0/log"
@@ -36,6 +37,11 @@ func init() {
 }
 
 func SaveConfig() error {
+	// Don't save config during testing
+	if testing.Testing() {
+		return nil
+	}
+
 	file, err := os.Create(configPath)
 	if err != nil {
 		return err

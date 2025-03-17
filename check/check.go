@@ -42,12 +42,3 @@ func Register(c Check) Check {
 	}
 	return c
 }
-
-func Update(c Check) Check {
-	shared.Config.Checks[c.UUID()] = shared.CheckStatus{
-		UpdatedAt: time.Now(),
-		Passed:    c.Passed(),
-		Disabled:  !c.IsRunnable(),
-	}
-	return c
-}

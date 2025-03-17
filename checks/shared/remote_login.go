@@ -2,9 +2,6 @@ package shared
 
 import (
 	"fmt"
-	"net"
-	"testing"
-	"time"
 
 	"github.com/caarlos0/log"
 )
@@ -17,41 +14,6 @@ type RemoteLogin struct {
 // Name returns the name of the check
 func (f *RemoteLogin) Name() string {
 	return "Remote login is disabled"
-}
-
-// checkPort tests if a port is open
-func (f *RemoteLogin) checkPort(port int, proto string) bool {
-
-	if testing.Testing() {
-		return checkPortMock(port, proto)
-	}
-
-	addrs, err := net.InterfaceAddrs()
-	if err != nil {
-		return false
-	}
-
-	for _, addr := range addrs {
-		ip, _, err := net.ParseCIDR(addr.String())
-		if err != nil {
-			continue
-		}
-
-		// Filter out 127.0.0.1
-		if ip.IsLoopback() {
-			continue
-		}
-
-		address := fmt.Sprintf("%s:%d", ip.String(), port)
-		conn, err := net.DialTimeout(proto, address, 1*time.Second)
-		if err == nil {
-			defer conn.Close()
-			log.WithField("check", f.Name()).WithField("address", address).WithField("state", true).Debug("Checking port")
-			return true
-		}
-	}
-
-	return false
 }
 
 // Run executes the check
@@ -68,7 +30,7 @@ func (f *RemoteLogin) Run() error {
 	}
 
 	for port, service := range portsToCheck {
-		if f.checkPort(port, "tcp") {
+		if CheckPort(port, "tcp") {
 			log.WithField("check", f.Name()).WithField("port", port).WithField("service", service).Debug("Remote access service found")
 			f.passed = false
 			f.ports[port] = service
