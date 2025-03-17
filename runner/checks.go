@@ -82,9 +82,6 @@ func Check(ctx context.Context, claimsTorun []claims.Claim) {
 	}
 
 	log.Info("Checks completed.")
-	if err := shared.SaveConfig(); err != nil {
-		log.WithError(err).Warn("cannot save config")
-	}
 }
 
 // CheckJSON validates and executes each check defined in the provided slice of claims.
@@ -115,10 +112,16 @@ func CheckJSON(claimsTorun []claims.Claim) {
 			} else {
 				status[chk.UUID()] = "failed"
 			}
+
+			shared.UpdateLastState(shared.LastState{
+				UUID:    chk.UUID(),
+				State:   chk.Passed(),
+				Details: chk.Status(),
+			})
 		}
 	}
-	if err := shared.SaveConfig(); err != nil {
-		log.WithError(err).Warn("cannot save config")
+	if err := shared.CommitLastState(); err != nil {
+		log.WithError(err).Warn("failed to commit last state")
 	}
 	out, err := json.MarshalIndent(status, "", "  ")
 	if err != nil {
