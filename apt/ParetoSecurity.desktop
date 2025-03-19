@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Exec=/usr/bin/paretosecurity menubar
+Exec=/usr/bin/paretosecurity trayicon
 Icon=ParetoSecurity
 Hidden=false
 NoDisplay=false
