@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/ParetoSecurity/agent/shared"
+	"github.com/h2non/gock"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -25,6 +26,11 @@ func TestParseJWT(t *testing.T) {
 }
 
 func TestRunLinkCommand_Success(t *testing.T) {
+	defer gock.Off()
+
+	gock.New("https://dash.paretosecurity.com").
+		Reply(200).
+		JSON([]map[string]string{{"status": "ok"}})
 
 	// Reset config
 	shared.Config.TeamID = ""
