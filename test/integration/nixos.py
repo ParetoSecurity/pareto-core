@@ -1,7 +1,7 @@
 assert "Pareto Security CLI" in machine.succeed("paretosecurity --help")
 
 res = machine.fail("paretosecurity check")
-fail_count = res.count("fail")
+fail_count = res.count("✗")
 dial_error_count = res.count("Failed to connect to helper")
 assert (
     dial_error_count == 0
