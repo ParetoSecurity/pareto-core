@@ -37,6 +37,7 @@ func init() {
 }
 
 func SaveConfig() error {
+
 	// Don't save config during testing
 	if testing.Testing() {
 		return nil
