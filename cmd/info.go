@@ -13,7 +13,7 @@ import (
 
 var infoCmd = &cobra.Command{
 	Use:   "info",
-	Short: "Print the system information",
+	Short: "Print the system and reports information",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		log.Infof("%s@%s %s", shared.Version, shared.Commit, shared.Date)
@@ -31,13 +31,17 @@ var infoCmd = &cobra.Command{
 			log.Warn("Failed to get process information")
 		}
 		envInfo := hostInfo.Info()
-		envInfo.IPs = []string{}
-		envInfo.MACs = []string{}
+		envInfo.IPs = []string{}  // Exclude IPs for privacy
+		envInfo.MACs = []string{} // Exclude MACs for privacy
 		jsonOutput, err = json.MarshalIndent(envInfo, "", "  ")
 		if err != nil {
 			log.Warn("Failed to marshal host info")
 		}
 		log.Infof("Host Info: %s", string(jsonOutput))
+
+		// Print the status of the checks
+		log.Infof("Checks Status:")
+		shared.PrintStates()
 
 		os.Exit(0)
 	},

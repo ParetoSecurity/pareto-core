@@ -61,9 +61,9 @@ func AllChecksPassed() bool {
 	return true
 }
 
+// PrintStates loads and prints all stored states with their UUIDs, state values, and details.
 func PrintStates() {
-	mutex.RLock()
-	defer mutex.RUnlock()
+	loadStates()
 
 	for uuid, state := range states {
 		log.Infof("UUID: %s, State: %v, Details: %s", uuid, state.State, state.Details)
