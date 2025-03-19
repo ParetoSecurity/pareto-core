@@ -95,30 +95,7 @@ func getIcon() []byte {
 
 func addOptions() {
 	mOptions := systray.AddMenuItem("Options", "Settings")
-	mauto := mOptions.AddSubMenuItemCheckbox("Run checks every hour", "Toggle running checks every hour", isUserTimerInstalled())
 	mlink := mOptions.AddSubMenuItemCheckbox("Send reports to the dashboard", "Configure sending device reports to the team", shared.IsLinked())
-	go func() {
-		for range mauto.ClickedCh {
-			if isUserTimerInstalled() {
-				// execute the command to toggle auto start
-
-				if _, err := shared.RunCommand(shared.SelfExe(), "check", "--install"); err != nil {
-					log.WithError(err).Error("failed to run toggle-autostart command")
-				}
-			} else {
-				// execute the command to toggle auto start
-
-				if _, err := shared.RunCommand(shared.SelfExe(), "check", "--uninstall"); err != nil {
-					log.WithError(err).Error("failed to run toggle-autostart command")
-				}
-			}
-			if isUserTimerInstalled() {
-				mauto.Check()
-			} else {
-				mauto.Uncheck()
-			}
-		}
-	}()
 	go func() {
 		for range mlink.ClickedCh {
 			if !shared.IsLinked() {

@@ -11,13 +11,14 @@ import (
 	"github.com/ParetoSecurity/agent/shared"
 	"github.com/caarlos0/log"
 	"github.com/pterm/pterm"
+	"github.com/samber/lo"
 )
 
 // Check runs a series of checks concurrently for a list of claims.
 //
 // It iterates over each claim provided in claimsTorun and, for each claim,
 // over its associated checks. Each check is executed in its own goroutine.
-func Check(ctx context.Context, claimsTorun []claims.Claim) {
+func Check(ctx context.Context, claimsTorun []claims.Claim, skipUUIDs []string) {
 	multi := pterm.DefaultMultiPrinter
 	var wg sync.WaitGroup
 	log.Info("Starting checks...")
@@ -26,6 +27,10 @@ func Check(ctx context.Context, claimsTorun []claims.Claim) {
 	}
 	for _, claim := range claimsTorun {
 		for _, chk := range claim.Checks {
+			// Skip checks that are skipped
+			if lo.Contains(skipUUIDs, chk.UUID()) {
+				continue
+			}
 			wg.Add(1)
 			go func(claim claims.Claim, chk check.Check) {
 				defer wg.Done()
@@ -51,7 +56,7 @@ func Check(ctx context.Context, claimsTorun []claims.Claim) {
 
 					// Skip checks that are not runnable
 					if !chk.IsRunnable() {
-						spinner.Warning(pterm.White(claim.Title), pterm.White(": "), pterm.Blue(fmt.Sprintf("%s > ", chk.Name())), pterm.Yellow("skipped"))
+						spinner.Warning(pterm.White(claim.Title), pterm.White(": "), pterm.Blue(fmt.Sprintf("%s > ", chk.Name())), pterm.Yellow(chk.Status()))
 						return
 					}
 
@@ -82,52 +87,6 @@ func Check(ctx context.Context, claimsTorun []claims.Claim) {
 	}
 
 	log.Info("Checks completed.")
-}
-
-// CheckJSON validates and executes each check defined in the provided slice of claims.
-// It iterates over each claim in claimsTorun and for every check within a claim:
-//   - If the check is not runnable (determined by IsRunnable), it tags the check with a "skipped" status.
-//   - Otherwise, it runs the check using Run. If Run returns an error, the check's status is set to the error message.
-//   - If no error occurs, the check's Pass/Fail result (via Passed) is recorded as "passed" or "failed".
-//
-// After processing all checks, the function attempts to save the configuration using shared.SaveConfig,
-// logs a warning if saving fails, marshals the status map into indented JSON,
-// logs any marshalling error, and prints the final JSON.
-func CheckJSON(claimsTorun []claims.Claim) {
-	status := make(map[string]string)
-	for _, claim := range claimsTorun {
-		for _, chk := range claim.Checks {
-
-			if !chk.IsRunnable() {
-				status[chk.UUID()] = "skipped"
-				continue
-			}
-
-			if err := chk.Run(); err != nil {
-				status[chk.UUID()] = err.Error()
-				continue
-			}
-			if chk.Passed() {
-				status[chk.UUID()] = "passed"
-			} else {
-				status[chk.UUID()] = "failed"
-			}
-
-			shared.UpdateLastState(shared.LastState{
-				UUID:    chk.UUID(),
-				State:   chk.Passed(),
-				Details: chk.Status(),
-			})
-		}
-	}
-	if err := shared.CommitLastState(); err != nil {
-		log.WithError(err).Warn("failed to commit last state")
-	}
-	out, err := json.MarshalIndent(status, "", "  ")
-	if err != nil {
-		log.WithError(err).Warn("cannot marshal status")
-	}
-	fmt.Println(string(out))
 }
 
 // PrintSchemaJSON constructs and prints a JSON schema generated from a slice of claims.
