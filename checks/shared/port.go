@@ -3,6 +3,7 @@ package shared
 import (
 	"fmt"
 	"net"
+	"testing"
 	"time"
 
 	"github.com/caarlos0/log"
@@ -10,6 +11,10 @@ import (
 
 // checkPort tests if a port is open
 func CheckPort(port int, proto string) bool {
+
+	if testing.Testing() {
+		return CheckPortMock(port, proto)
+	}
 
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {

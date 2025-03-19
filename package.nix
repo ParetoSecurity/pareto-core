@@ -7,6 +7,5 @@ pkgs.buildGo124Module rec {
   version = "${builtins.hashFile "sha256" "${toString ./go.sum}"}";
   src = ./.;
   vendorHash = "sha256-IxjJNjF+fp4iLmo/MW5nJOx7HKuFhw7zgWqg/0remhk=";
-  subPackages = ["cmd/paretosecurity"];
   doCheck = true;
 }

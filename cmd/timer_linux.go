@@ -38,7 +38,7 @@ WantedBy=timers.target`
 func isUserTimerInstalled() bool {
 	homeDir, err := userHomeDir()
 	if err != nil {
-		log.WithError(err).Fatal("Failed to get home directory")
+		log.WithError(err).Warn("Failed to get home directory")
 		return false
 	}
 

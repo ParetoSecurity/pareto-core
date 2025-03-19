@@ -3,6 +3,7 @@ package checks
 import (
 	"testing"
 
+	sharedchecks "github.com/ParetoSecurity/agent/checks/shared"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -45,7 +46,7 @@ func TestPrinterRun(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			checkPortMock = tt.mockCheckPort
+			sharedchecks.CheckPortMock = tt.mockCheckPort
 			printer := &Printer{}
 
 			err := printer.Run()

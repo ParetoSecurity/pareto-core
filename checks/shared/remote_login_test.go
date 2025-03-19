@@ -10,7 +10,7 @@ func TestRemoteLogin_Run_NoOpenPorts(t *testing.T) {
 	remoteLogin := &RemoteLogin{}
 
 	// Mock checkPort to always return false
-	checkPortMock = func(port int, proto string) bool {
+	CheckPortMock = func(port int, proto string) bool {
 		return false
 	}
 
@@ -24,7 +24,7 @@ func TestRemoteLogin_Run_OpenPorts(t *testing.T) {
 	remoteLogin := &RemoteLogin{}
 
 	// Mock checkPort to return true for specific ports
-	checkPortMock = func(port int, _ string) bool {
+	CheckPortMock = func(port int, _ string) bool {
 		return port == 22 || port == 3389
 	}
 

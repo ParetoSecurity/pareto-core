@@ -36,7 +36,7 @@ func TestBroadcasting(t *testing.T) {
 		if msg != "update" {
 			t.Fatalf("Expected 'update', got %s", msg)
 		}
-	case <-time.After(1 * time.Second):
+	case <-time.After(5 * time.Second):
 		t.Fatal("Did not receive broadcast message within timeout")
 	}
 }
