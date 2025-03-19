@@ -14,11 +14,6 @@
   }:
     flake-parts.lib.mkFlake {inherit inputs;} {
       systems = nixpkgs.lib.systems.flakeExposed;
-      flake = {
-        overlays.default = import ./overlay.nix;
-        nixosModules.paretosecurity = ./modules/paretosecurity.nix;
-        nixosModules.default = self.nixosModules.paretosecurity;
-      };
 
       perSystem = {
         config,
