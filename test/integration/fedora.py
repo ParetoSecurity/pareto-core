@@ -2,7 +2,7 @@ vm.wait_for_unit("multi-user.target")
 print(vm.succeed("ls -all /mnt/package"))
 vm.succeed("sudo dnf install -y /mnt/package/*x86_64.rpm")
 
-res = vm.succeed("paretosecurity check --json")
+res = vm.succeed("paretosecurity check")
 fail_count = res.count("fail")
 dial_error_count = res.count("Failed to connect to helper")
 assert (

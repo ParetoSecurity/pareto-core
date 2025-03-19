@@ -32,12 +32,6 @@ To run a one-time security audit:
 paretosecurity check
 ```
 
-or with JSON reporter
-
-```bash
-paretosecurity check --json
-```
-
 ### Using Nix
 
 <details>
