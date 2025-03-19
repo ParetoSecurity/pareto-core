@@ -33,10 +33,10 @@ func CheckPort(port int, proto string) bool {
 		}
 
 		address := net.JoinHostPort(ip.String(), fmt.Sprintf("%d", port))
+		log.WithField("address", address).WithField("state", true).Debug("Checking port")
 		conn, err := net.DialTimeout(proto, address, 1*time.Second)
 		if err == nil {
 			defer conn.Close()
-			log.WithField("address", address).WithField("state", true).Debug("Checking port")
 			return true
 		}
 	}
