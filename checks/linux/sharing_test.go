@@ -3,6 +3,7 @@ package checks
 import (
 	"testing"
 
+	sharedchecks "github.com/ParetoSecurity/agent/checks/shared"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -48,7 +49,7 @@ func TestSharing_Run(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Mock the checkPort function
-			checkPortMock = tt.mockFunc
+			sharedchecks.CheckPortMock = tt.mockFunc
 
 			sharing := &Sharing{}
 			err := sharing.Run()
