@@ -53,6 +53,13 @@ func Check(ctx context.Context, claimsTorun []claims.Claim, skipUUIDs []string) 
 							Text:  "✓",
 						},
 					}
+					spinner.WarningPrinter = &pterm.PrefixPrinter{
+						MessageStyle: &pterm.Style{pterm.FgLightYellow},
+						Prefix: pterm.Prefix{
+							Style: &pterm.Style{pterm.BgYellow, pterm.FgLightYellow},
+							Text:  "ø",
+						},
+					}
 
 					// Skip checks that are not runnable
 					if !chk.IsRunnable() {
