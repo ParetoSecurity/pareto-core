@@ -50,7 +50,7 @@ in {
     echo "Got: $got"
     if [ "$specified" != "$got" ]; then
       echo "Mismatch detected, updating package.nix hash from $specified to $got"
-      sed -i"" -e "s/$specified/$got/g" ./package.nix
+      sed -i -e "s|$specified|$got|g" ./package.nix
     else
       echo "Hashes match; no update required."
     fi

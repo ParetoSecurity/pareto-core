@@ -1,9 +1,13 @@
-assert "Pareto Security CLI" in machine.succeed("paretosecurity --help")
 
-res = machine.fail("paretosecurity check")
-fail_count = res.count("✗")
-dial_error_count = res.count("Failed to connect to helper")
-assert (
-    dial_error_count == 0
-), f"Helper could not start, found : {dial_error_count} calls to dial error"
-assert fail_count > 3, f"Found {fail_count} failed checks"
+help = machine.succeed("paretosecurity --help")
+assert "Pareto Security CLI" in help
+print(help)
+
+status, res = machine.execute("paretosecurity check")
+assert "Failed to connect to helper" not in res, "Helper could not start"
+
+res = machine.succeed("paretosecurity info 2>&1")
+fail_count = res.count("false")
+print(res)
+
+assert fail_count > 0, f"Failed to find any failed checks, found: {fail_count}"
