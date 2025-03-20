@@ -1,8 +1,6 @@
 package check
 
 import (
-	"time"
-
 	"github.com/ParetoSecurity/agent/shared"
 )
 
@@ -36,9 +34,7 @@ func Register(c Check) Check {
 
 	// Add the check to the checks map
 	shared.Config.Checks[c.UUID()] = shared.CheckStatus{
-		UpdatedAt: time.Now(),
-		Passed:    c.Passed(),
-		Disabled:  !c.IsRunnable(),
+		Disabled: !c.IsRunnable(),
 	}
 	return c
 }

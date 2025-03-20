@@ -3,7 +3,6 @@ package shared
 import (
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/caarlos0/log"
 	"github.com/pelletier/go-toml"
@@ -13,9 +12,7 @@ var Config ParetoConfig
 var configPath string
 
 type CheckStatus struct {
-	UpdatedAt time.Time
-	Passed    bool
-	Disabled  bool
+	Disabled bool
 }
 
 type ParetoConfig struct {
