@@ -3,6 +3,7 @@ package shared
 import (
 	"fmt"
 	"net"
+	"sync"
 	"testing"
 	"time"
 
@@ -21,6 +22,9 @@ func CheckPort(port int, proto string) bool {
 		return false
 	}
 
+	var wg sync.WaitGroup
+	resultCh := make(chan bool, len(addrs))
+
 	for _, addr := range addrs {
 		ip, _, err := net.ParseCIDR(addr.String())
 		if err != nil {
@@ -32,11 +36,28 @@ func CheckPort(port int, proto string) bool {
 			continue
 		}
 
-		address := net.JoinHostPort(ip.String(), fmt.Sprintf("%d", port))
-		conn, err := net.DialTimeout(proto, address, 1*time.Second)
-		if err == nil {
-			defer conn.Close()
-			log.WithField("address", address).WithField("state", true).Debug("Checking port")
+		wg.Add(1)
+		go func(ipAddr net.IP) {
+			defer wg.Done()
+			address := net.JoinHostPort(ipAddr.String(), fmt.Sprintf("%d", port))
+			conn, err := net.DialTimeout(proto, address, 1*time.Second)
+			if err == nil {
+				defer conn.Close()
+				log.WithField("address", address).WithField("state", true).Debug("Checking port")
+				resultCh <- true
+			}
+		}(ip)
+	}
+
+	// Wait in a separate goroutine
+	go func() {
+		wg.Wait()
+		close(resultCh)
+	}()
+
+	// Check if any connection succeeded
+	for result := range resultCh {
+		if result {
 			return true
 		}
 	}

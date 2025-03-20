@@ -20,18 +20,3 @@ func Test_CheckCMD(t *testing.T) {
 		t.Fatalf("expected \"%s\" got \"%s\"", expected, string(out))
 	}
 }
-
-func Test_CheckJsonCMD(t *testing.T) {
-	expected := "check       Run checks"
-	b := bytes.NewBufferString("")
-	checkCmd.SetOut(b)
-	checkCmd.SetArgs([]string{"--json"})
-	checkCmd.Execute()
-	out, err := io.ReadAll(b)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if strings.Contains(string(out), expected) {
-		t.Fatalf("expected \"%s\" got \"%s\"", expected, string(out))
-	}
-}

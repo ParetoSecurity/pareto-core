@@ -80,3 +80,63 @@ func TestCommitLastState_Error(t *testing.T) {
 		t.Fatalf("expected error when committing to a directory, got none")
 	}
 }
+
+func TestAllChecksPassed(t *testing.T) {
+	tests := []struct {
+		name     string
+		testData map[string]LastState
+		want     bool
+	}{
+		{
+			name: "all checks pass",
+			testData: map[string]LastState{
+				"uuid1": {UUID: "uuid1", State: true, Details: "passed"},
+				"uuid2": {UUID: "uuid2", State: true, Details: "passed"},
+				"uuid3": {UUID: "uuid3", State: true, Details: "passed"},
+			},
+			want: true,
+		},
+		{
+			name: "one check fails",
+			testData: map[string]LastState{
+				"uuid1": {UUID: "uuid1", State: true, Details: "passed"},
+				"uuid2": {UUID: "uuid2", State: false, Details: "failed"},
+				"uuid3": {UUID: "uuid3", State: true, Details: "passed"},
+			},
+			want: false,
+		},
+		{
+			name: "all checks fail",
+			testData: map[string]LastState{
+				"uuid1": {UUID: "uuid1", State: false, Details: "failed"},
+				"uuid2": {UUID: "uuid2", State: false, Details: "failed"},
+			},
+			want: false,
+		},
+		{
+			name:     "no checks",
+			testData: map[string]LastState{},
+			want:     true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Setup test state
+			mutex.Lock()
+			states = make(map[string]LastState)
+			for k, v := range tt.testData {
+				states[k] = v
+			}
+			mutex.Unlock()
+
+			// Run the function
+			got := AllChecksPassed()
+
+			// Check result
+			if got != tt.want {
+				t.Errorf("AllChecksPassed() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

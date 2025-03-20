@@ -48,8 +48,8 @@ func CommitLastState() error {
 	return encoder.Encode(states)
 }
 
-// AllTestsPassed returns true if all checks have passed.
-func AllTestsPassed() bool {
+// AllChecksPassed returns true if all checks have passed.
+func AllChecksPassed() bool {
 	mutex.RLock()
 	defer mutex.RUnlock()
 
@@ -59,6 +59,15 @@ func AllTestsPassed() bool {
 		}
 	}
 	return true
+}
+
+// PrintStates loads and prints all stored states with their UUIDs, state values, and details.
+func PrintStates() {
+	loadStates()
+
+	for uuid, state := range states {
+		log.Infof("UUID: %s, State: %v, Details: %s", uuid, state.State, state.Details)
+	}
 }
 
 // UpdateState updates the LastState struct in the in-memory map and commits to the TOML file.

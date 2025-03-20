@@ -3,7 +3,7 @@ print(vm.succeed("ls -all /mnt/package"))
 vm.succeed(
     "DEBIAN_FRONTEND=noninteractive sudo dpkg -i /mnt/package/paretosecurity_amd64.deb"
 )
-res = vm.succeed("paretosecurity check --json")
+res = vm.succeed("paretosecurity check")
 fail_count = res.count("fail")
 dial_error_count = res.count("Failed to connect to helper")
 assert (

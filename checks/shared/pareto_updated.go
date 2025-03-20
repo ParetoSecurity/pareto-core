@@ -2,6 +2,7 @@ package shared
 
 import (
 	"context"
+	"fmt"
 	"runtime"
 
 	"github.com/ParetoSecurity/agent/shared"
@@ -78,11 +79,13 @@ func (f *ParetoUpdated) Run() error {
 
 	if len(res) == 0 {
 		f.details = "No releases found"
+		return nil
 	}
 
 	if res[0].TagName == shared.Version {
 		f.passed = true
 	}
+	f.details = fmt.Sprintf("Current version: %s, Latest version: %s", shared.Version, res[0].TagName)
 	return nil
 
 }
@@ -109,7 +112,7 @@ func (f *ParetoUpdated) PassedMessage() string {
 
 // FailedMessage returns the message to return if the check failed
 func (f *ParetoUpdated) FailedMessage() string {
-	return "Pareto Security is outdated"
+	return "Pareto Security is outdated " + f.details
 }
 
 // RequiresRoot returns whether the check requires root access

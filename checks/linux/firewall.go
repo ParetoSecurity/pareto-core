@@ -81,7 +81,7 @@ func (f *Firewall) IsRunnable() bool {
 
 	can := shared.IsSocketServicePresent()
 	if !can {
-		f.status = "Root helper is not available, check cannot run. See https://paretosecurity.com/root-helper for more information."
+		f.status = "Root helper is not available, check cannot run. See https://paretosecurity.com/docs/linux/root-helper for more information."
 		return false
 	}
 
