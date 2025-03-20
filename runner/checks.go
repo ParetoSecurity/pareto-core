@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/fatih/color"
+
 	"github.com/ParetoSecurity/agent/check"
 	"github.com/ParetoSecurity/agent/claims"
 	"github.com/ParetoSecurity/agent/shared"
@@ -13,12 +15,12 @@ import (
 	"github.com/samber/lo"
 )
 
+// wrapStatus formats the check status with color-coded indicators.
 func wrapStatus(chk check.Check) string {
-	status := chk.Passed()
-	if status {
-		return fmt.Sprintf("[OK] %s", chk.Status())
+	if chk.Passed() {
+		return fmt.Sprintf("%s %s", color.GreenString("[OK]"), chk.Status())
 	}
-	return fmt.Sprintf("[FAIL] %s", chk.Status())
+	return fmt.Sprintf("%s %s", color.RedString("[FAIL]"), chk.Status())
 }
 
 // Check runs a series of checks concurrently for a list of claims.
@@ -34,7 +36,7 @@ func Check(ctx context.Context, claimsTorun []claims.Claim, skipUUIDs []string) 
 		for _, chk := range claim.Checks {
 			// Skip checks that are skipped
 			if lo.Contains(skipUUIDs, chk.UUID()) {
-				log.Warn(fmt.Sprintf("%s: %s > %s", claim.Title, chk.Name(), "skipped"))
+				log.Warn(fmt.Sprintf("%s: %s > %s", claim.Title, chk.Name(), fmt.Sprintf("%s Skipped by the command rule", color.YellowString("[SKIP]"))))
 				continue
 			}
 			wg.Add(1)
