@@ -21,7 +21,7 @@ type CheckStatus struct {
 type ParetoConfig struct {
 	TeamID    string
 	AuthToken string
-	Checks    map[string]CheckStatus
+	Checks    map[string]CheckStatus `toml:",omitempty"`
 }
 
 func init() {
