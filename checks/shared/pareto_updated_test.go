@@ -3,13 +3,37 @@ package shared
 import (
 	"testing"
 
+	"github.com/ParetoSecurity/agent/shared"
 	"github.com/h2non/gock"
 )
 
 func TestParetoUpdated_Run(t *testing.T) {
 	defer gock.Off() // Flush pending mocks after test execution
+	shared.Config.TeamID = "test-team-id"
+	shared.Config.AuthToken = "test-auth-token"
+	defer func() {
+		shared.Config.TeamID = ""
+		shared.Config.AuthToken = ""
+	}()
 
 	gock.New("https://paretosecurity.com/api/updates").
+		Reply(200).
+		JSON([]map[string]string{{"tag_name": "1.7.91"}})
+	check := &ParetoUpdated{}
+	err := check.Run()
+
+	if err != nil {
+		t.Errorf("unexpected error: %v", err)
+	}
+
+}
+
+func TestParetoUpdated_RunPublic(t *testing.T) {
+	defer gock.Off() // Flush pending mocks after test execution
+	shared.Config.TeamID = ""
+	shared.Config.AuthToken = ""
+
+	gock.New("https://api.github.com").
 		Reply(200).
 		JSON([]map[string]string{{"tag_name": "1.7.91"}})
 	check := &ParetoUpdated{}

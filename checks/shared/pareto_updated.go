@@ -36,19 +36,39 @@ func (f *ParetoUpdated) Run() error {
 	if runtime.GOOS == "windows" {
 		platform = "windows"
 	}
-	// uuid=REDACTED&version=1.7.91&os_version=15.1.1&distribution=app-live-setapp"
-	err := requests.URL("https://paretosecurity.com/api/updates").
-		Param("uuid", device.MachineUUID).
-		Param("version", shared.Version).
-		Param("os_version", device.OSVersion).
-		Param("platform", platform).
-		Param("app", "auditor").
-		Param("distribution", func() string {
-			if shared.IsLinked() {
-				return "app-live-team"
-			}
-			return "app-live-opensource"
-		}()).
+
+	if shared.IsLinked() {
+		err := requests.URL("https://paretosecurity.com/api/updates").
+			Param("uuid", device.MachineUUID).
+			Param("version", shared.Version).
+			Param("os_version", device.OSVersion).
+			Param("platform", platform).
+			Param("app", "auditor").
+			Param("distribution", func() string {
+				if shared.IsLinked() {
+					return "app-live-team"
+				}
+				return "app-live-opensource"
+			}()).
+			ToJSON(&res).
+			Fetch(context.Background())
+		if err != nil {
+			log.WithError(err).
+				Warnf("Failed to check for updates")
+			return err
+		}
+
+		if len(res) == 0 {
+			f.details = "No releases found"
+		}
+
+		if res[0].TagName == shared.Version {
+			f.passed = true
+		}
+		return nil
+	}
+
+	err := requests.URL("https://api.github.com/repos/ParetoSecurity/pareto-mac/releases").
 		ToJSON(&res).
 		Fetch(context.Background())
 	if err != nil {
@@ -67,6 +87,7 @@ func (f *ParetoUpdated) Run() error {
 	}
 	f.details = fmt.Sprintf("Current version: %s, Latest version: %s", shared.Version, res[0].TagName)
 	return nil
+
 }
 
 // Passed returns the status of the check
