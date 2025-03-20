@@ -68,7 +68,7 @@ func (f *ParetoUpdated) Run() error {
 		return nil
 	}
 
-	err := requests.URL("https://api.github.com/repos/ParetoSecurity/pareto-mac/releases").
+	err := requests.URL("https://api.github.com/repos/ParetoSecurity/agent/releases").
 		ToJSON(&res).
 		Fetch(context.Background())
 	if err != nil {
