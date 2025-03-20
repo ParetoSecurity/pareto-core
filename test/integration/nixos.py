@@ -10,5 +10,4 @@ res = machine.succeed("paretosecurity info")
 fail_count = res.count("State: false")
 print(res)
 
-
-assert fail_count > 0, "End line not found"
+assert fail_count > 0, f"Failed to find any failed checks, found: {fail_count}"

@@ -30,7 +30,7 @@ func init() {
 		log.WithError(err).Warn("failed to get user home directory, using current directory instead")
 		homeDir = "."
 	}
-	statePath = filepath.Join(homeDir, ".cache", "paretosecurity.state")
+	statePath = filepath.Join(homeDir, ".paretosecurity.state")
 }
 
 // Commit writes the current state map to the TOML file.
