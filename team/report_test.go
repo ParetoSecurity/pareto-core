@@ -80,9 +80,9 @@ func TestNowReportCounts(t *testing.T) {
 
 	dummyClaims := []claims.Claim{
 		{Title: "Test Case", Checks: []check.Check{
-			check.Register(&c1),
-			check.Register(&c2),
-			check.Register(&c3),
+			&c1,
+			&c2,
+			&c3,
 		}},
 	}
 	report := NowReport(dummyClaims)

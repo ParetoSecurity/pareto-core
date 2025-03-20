@@ -24,11 +24,6 @@ func TestSaveConfig_Success(t *testing.T) {
 	Config = ParetoConfig{
 		TeamID:    "team1",
 		AuthToken: "token1",
-		Checks: map[string]CheckStatus{
-			"check1": {
-				Disabled: false,
-			},
-		},
 	}
 
 	// Call SaveConfig.
@@ -55,10 +50,7 @@ func TestSaveConfig_Success(t *testing.T) {
 	if loadedConfig.AuthToken != Config.AuthToken {
 		t.Errorf("expected AuthToken %q, got %q", Config.AuthToken, loadedConfig.AuthToken)
 	}
-	_, ok := loadedConfig.Checks["check1"]
-	if !ok {
-		t.Errorf("expected check 'check1' in Checks map")
-	}
+
 }
 
 func TestSaveConfig_Failure(t *testing.T) {

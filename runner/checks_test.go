@@ -70,7 +70,7 @@ func TestCheckSuccess(t *testing.T) {
 	}
 	dummyClaims := []claims.Claim{
 		{Title: "Test Case", Checks: []check.Check{
-			check.Register(dc),
+			dc,
 		}},
 	}
 	ctx := context.Background()
@@ -93,7 +93,7 @@ func TestCheckNotRunnable(t *testing.T) {
 	}
 	dummyClaims := []claims.Claim{
 		{Title: "Test Case", Checks: []check.Check{
-			check.Register(dc),
+			dc,
 		}},
 	}
 	ctx := context.Background()
@@ -115,7 +115,7 @@ func TestCheckContextCanceled(t *testing.T) {
 	}
 	dummyClaims := []claims.Claim{
 		{Title: "Test Case", Checks: []check.Check{
-			check.Register(dc),
+			dc,
 		}},
 	}
 	// Create a context that is already canceled.
@@ -143,7 +143,7 @@ func TestPrintSchemaJSON(t *testing.T) {
 	// Create a claim with one check.
 	testClaim := claims.Claim{
 		Title:  "Test Claim",
-		Checks: []check.Check{check.Register(dc)},
+		Checks: []check.Check{dc},
 	}
 	claimsTorun := []claims.Claim{testClaim}
 
