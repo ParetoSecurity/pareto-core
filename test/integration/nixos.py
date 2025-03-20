@@ -7,7 +7,7 @@ status, res = machine.execute("paretosecurity check")
 assert "Failed to connect to helper" not in res, "Helper could not start"
 
 res = machine.succeed("paretosecurity info")
-fail_count = res.count("State: false")
+fail_count = res.count("false")
 print(res)
 
 assert fail_count > 0, f"Failed to find any failed checks, found: {fail_count}"
