@@ -10,25 +10,31 @@ import (
 	"github.com/ParetoSecurity/agent/claims"
 	"github.com/ParetoSecurity/agent/shared"
 	"github.com/caarlos0/log"
-	"github.com/pterm/pterm"
 	"github.com/samber/lo"
 )
+
+func wrapStatus(chk check.Check) string {
+	status := chk.Passed()
+	if status {
+		return fmt.Sprintf("[OK] %s", chk.Status())
+	}
+	return fmt.Sprintf("[FAIL] %s", chk.Status())
+}
 
 // Check runs a series of checks concurrently for a list of claims.
 //
 // It iterates over each claim provided in claimsTorun and, for each claim,
 // over its associated checks. Each check is executed in its own goroutine.
 func Check(ctx context.Context, claimsTorun []claims.Claim, skipUUIDs []string) {
-	multi := pterm.DefaultMultiPrinter
+
 	var wg sync.WaitGroup
 	log.Info("Starting checks...")
-	if _, err := multi.Start(); err != nil {
-		log.WithError(err).Warn("failed to stop multi printer")
-	}
+
 	for _, claim := range claimsTorun {
 		for _, chk := range claim.Checks {
 			// Skip checks that are skipped
 			if lo.Contains(skipUUIDs, chk.UUID()) {
+				log.Warn(fmt.Sprintf("%s: %s > %s", claim.Title, chk.Name(), "skipped"))
 				continue
 			}
 			wg.Add(1)
@@ -38,44 +44,23 @@ func Check(ctx context.Context, claimsTorun []claims.Claim, skipUUIDs []string) 
 				case <-ctx.Done():
 					return
 				default:
-					spinner, _ := pterm.DefaultSpinner.WithWriter(multi.NewWriter()).Start(fmt.Sprintf("%s: %s", claim.Title, chk.Name()))
-					spinner.FailPrinter = &pterm.PrefixPrinter{
-						MessageStyle: &pterm.Style{pterm.FgLightRed},
-						Prefix: pterm.Prefix{
-							Style: &pterm.Style{pterm.BgRed, pterm.FgLightRed},
-							Text:  "✗",
-						},
-					}
-					spinner.SuccessPrinter = &pterm.PrefixPrinter{
-						MessageStyle: &pterm.Style{pterm.FgLightGreen},
-						Prefix: pterm.Prefix{
-							Style: &pterm.Style{pterm.BgGreen, pterm.FgLightGreen},
-							Text:  "✓",
-						},
-					}
-					spinner.WarningPrinter = &pterm.PrefixPrinter{
-						MessageStyle: &pterm.Style{pterm.FgLightYellow},
-						Prefix: pterm.Prefix{
-							Style: &pterm.Style{pterm.BgYellow, pterm.FgLightYellow},
-							Text:  "ø",
-						},
-					}
 
 					// Skip checks that are not runnable
 					if !chk.IsRunnable() {
-						spinner.Warning(pterm.White(claim.Title), pterm.White(": "), pterm.Blue(fmt.Sprintf("%s > ", chk.Name())), pterm.Yellow(chk.Status()))
+						log.Warn(fmt.Sprintf("%s: %s > %s", claim.Title, chk.Name(), chk.Status()))
 						return
 					}
 
 					if err := chk.Run(); err != nil {
-						spinner.Fail(pterm.White(claim.Title), pterm.White(": "), pterm.Blue(fmt.Sprintf("%s > ", chk.Name())), pterm.Red(err.Error()))
+						log.WithError(err).Warnf("%s: %s > %s", claim.Title, chk.Name(), err.Error())
 					}
 
 					if chk.Passed() {
-						spinner.Success(pterm.White(claim.Title), pterm.White(": "), pterm.Green(chk.Status()))
+						log.Info(fmt.Sprintf("%s: %s > %s", claim.Title, chk.Name(), wrapStatus(chk)))
 					} else {
-						spinner.Fail(pterm.White(claim.Title), pterm.White(": "), pterm.Blue(fmt.Sprintf("%s > ", chk.Name())), pterm.Red(chk.Status()))
+						log.Warn(fmt.Sprintf("%s: %s > %s", claim.Title, chk.Name(), wrapStatus(chk)))
 					}
+
 					shared.UpdateLastState(shared.LastState{
 						UUID:    chk.UUID(),
 						State:   chk.Passed(),
@@ -88,9 +73,6 @@ func Check(ctx context.Context, claimsTorun []claims.Claim, skipUUIDs []string) 
 	wg.Wait()
 	if err := shared.CommitLastState(); err != nil {
 		log.WithError(err).Warn("failed to commit last state")
-	}
-	if _, err := multi.Stop(); err != nil {
-		log.WithError(err).Warn("failed to stop multi printer")
 	}
 
 	log.Info("Checks completed.")

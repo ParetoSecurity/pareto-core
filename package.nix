@@ -6,6 +6,6 @@ pkgs.buildGo124Module rec {
   pname = "paretosecurity";
   version = "${builtins.hashFile "sha256" "${toString ./go.sum}"}";
   src = ./.;
-  vendorHash = "sha256-IxjJNjF+fp4iLmo/MW5nJOx7HKuFhw7zgWqg/0remhk=";
+  vendorHash = "sha256-5DNwYEsfs0qGGwIUAH/zqxHgsa4MzzDEs9oP4zH/P6g=";
   doCheck = true;
 }
