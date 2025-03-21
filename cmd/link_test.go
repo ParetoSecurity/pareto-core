@@ -28,10 +28,7 @@ func TestParseJWT(t *testing.T) {
 func TestRunLinkCommand_Success(t *testing.T) {
 	defer gock.Off()
 
-	// Set default ReportURL for test
-	team.ReportURL = "https://dash.paretosecurity.com"
-
-	gock.New("https://dash.paretosecurity.com").
+	gock.New(shared.Config.ReportURL).
 		Reply(200).
 		JSON([]map[string]string{{"status": "ok"}})
 
@@ -42,7 +39,6 @@ func TestRunLinkCommand_Success(t *testing.T) {
 	defer func() {
 		shared.Config.TeamID = ""
 		shared.Config.AuthToken = ""
-		shared.SaveConfig()
 	}()
 
 	// Use the same valid token as in TestParseJWT.
@@ -51,7 +47,7 @@ func TestRunLinkCommand_Success(t *testing.T) {
 	expectedTeamAuth := "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJyb2xlcyI6WyJsaW5rX2RldmljZSIsInVwZGF0ZV9kZXZpY2UiXSwidGVhbV9pZCI6IjI0MjljNDllLTM3YmItNDFiYi05MDc3LTZiYjYyMDJlMjU1YiIsImludml0ZV9pZCI6IjRhZjg1MTRhLWNlNjMtNDc0Ny04MDdmLTVjMzgzOWQ3ODM0MSIsInN1YiI6Imp0QG5pdGVvLmNvIiwiaWF0IjoxNzM2NDE3NDEwfQ.vSHU46nrej6iTodwHhBKELSDE17wqC2hsEQ_TXRcxgFZ7wlHzmRCgLYD8kpzzRO7o0O9u7gaziMrPL_oPuOurQ"
 
 	// Construct the URL with the valid token.
-	url := "http://example.com?token=" + validToken
+	url := "paretosecurity://team?token=" + validToken
 
 	// Call the function under test.
 	runLinkCommand(url)
@@ -64,23 +60,19 @@ func TestRunLinkCommand_Success(t *testing.T) {
 func TestRunLinkCommand_CustomServer(t *testing.T) {
 	defer gock.Off()
 
-	customServer := "https://custom.example.com"
-	team.ReportURL = customServer
-
-	gock.New(customServer).
+	gock.New("http://foo.com").
 		Reply(200).
 		JSON([]map[string]string{{"status": "ok"}})
 
 	// Reset config
 	shared.Config.TeamID = ""
 	shared.Config.AuthToken = ""
+	shared.Config.ReportURL = "http://foo.com"
 
 	defer func() {
 		shared.Config.TeamID = ""
 		shared.Config.AuthToken = ""
-		shared.SaveConfig()
-		// Reset to default
-		team.ReportURL = "https://dash.paretosecurity.com"
+		shared.Config.ReportURL = ""
 	}()
 
 	// Use the same valid token as in TestParseJWT.
@@ -89,7 +81,7 @@ func TestRunLinkCommand_CustomServer(t *testing.T) {
 	expectedTeamAuth := "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJyb2xlcyI6WyJsaW5rX2RldmljZSIsInVwZGF0ZV9kZXZpY2UiXSwidGVhbV9pZCI6IjI0MjljNDllLTM3YmItNDFiYi05MDc3LTZiYjYyMDJlMjU1YiIsImludml0ZV9pZCI6IjRhZjg1MTRhLWNlNjMtNDc0Ny04MDdmLTVjMzgzOWQ3ODM0MSIsInN1YiI6Imp0QG5pdGVvLmNvIiwiaWF0IjoxNzM2NDE3NDEwfQ.vSHU46nrej6iTodwHhBKELSDE17wqC2hsEQ_TXRcxgFZ7wlHzmRCgLYD8kpzzRO7o0O9u7gaziMrPL_oPuOurQ"
 
 	// Construct the URL with the valid token.
-	url := "http://example.com?token=" + validToken
+	url := "paretosecurity://team?token=" + validToken
 
 	// Call the function under test.
 	runLinkCommand(url)
@@ -99,5 +91,5 @@ func TestRunLinkCommand_CustomServer(t *testing.T) {
 	assert.Equal(t, expectedTeamAuth, shared.Config.AuthToken)
 
 	// Verify that custom server URL was used
-	assert.Equal(t, customServer, team.ReportURL)
+	assert.Equal(t, shared.Config.ReportURL, "http://foo.com")
 }
