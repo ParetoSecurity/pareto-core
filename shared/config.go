@@ -6,6 +6,7 @@ import (
 
 	"github.com/caarlos0/log"
 	"github.com/pelletier/go-toml"
+	"github.com/samber/lo"
 )
 
 var Config ParetoConfig
@@ -18,6 +19,7 @@ type CheckStatus struct {
 type ParetoConfig struct {
 	TeamID    string
 	AuthToken string
+	ReportURL string
 }
 
 func init() {
@@ -60,6 +62,11 @@ func LoadConfig() error {
 	err = decoder.Decode(&Config)
 	if err != nil {
 		return err
+	}
+
+	// Set default values if not set
+	if lo.IsEmpty(Config.ReportURL) {
+		Config.ReportURL = "https://dash.paretosecurity.com"
 	}
 
 	return nil

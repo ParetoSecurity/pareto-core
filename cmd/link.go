@@ -10,7 +10,6 @@ import (
 	"github.com/ParetoSecurity/agent/team"
 	"github.com/caarlos0/log"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 )
 
@@ -36,12 +35,19 @@ type InviteClaims struct {
 }
 
 var linkCmd = &cobra.Command{
-	Use:   "link <url>",
+	Use:   "link --server <url>",
 	Short: "Link team with this device",
 	Run: func(cc *cobra.Command, args []string) {
+		customServer, _ := cc.Flags().GetString("server")
+
+		shared.Config.ReportURL = customServer
+
+		// Check if the user is root
 		if shared.IsRoot() {
 			log.Fatal("Please run this command as a normal user.")
 		}
+
+		// Check if the arguments are provided
 		if len(args) < 1 {
 			log.Fatal("Please provide a team URL")
 		}
@@ -55,13 +61,13 @@ var linkCmd = &cobra.Command{
 }
 
 func runLinkCommand(teamURL string) error {
-	if lo.IsEmpty(teamURL) {
-		log.Warn("Please provide a team URL")
-		return errors.New("no team URL provided")
-	}
+
+	// Check if the URL is valid
 	if strings.Contains(teamURL, "https://") {
-		return errors.New("team URL should not contain the protocol")
+		return errors.New("please visit the link in your browser and copy the token")
 	}
+
+	// Check if the user is already linked to a team
 	if shared.IsLinked() {
 		log.Warn("Already linked to a team")
 		log.Warn("Unlink first with `paretosecurity unlink`")
@@ -69,36 +75,34 @@ func runLinkCommand(teamURL string) error {
 		return errors.New("already linked to a team")
 	}
 
-	if lo.IsNotEmpty(teamURL) {
-		token, err := getTokenFromURL(teamURL)
-		if err != nil {
-			log.WithError(err).Warn("failed to get token from URL")
-			return err
-		}
-
-		parsedToken, err := parseJWT(token)
-		if err != nil {
-			log.WithError(err).Warn("failed to parse JWT")
-			return err
-		}
-
-		shared.Config.TeamID = parsedToken.TeamUUID
-		shared.Config.AuthToken = parsedToken.TeamAuth
-
-		err = team.ReportToTeam(true)
-		if err != nil {
-			log.WithError(err).Warn("failed to report to team")
-			return err
-		}
-
-		err = shared.SaveConfig()
-		if err != nil {
-			log.Errorf("Error saving config: %v", err)
-			return err
-		}
-		log.Infof("Device successfully linked to team: %s", parsedToken.TeamUUID)
-
+	token, err := getTokenFromURL(teamURL)
+	if err != nil {
+		log.WithError(err).Warn("failed to get token from URL")
+		return err
 	}
+
+	parsedToken, err := parseJWT(token)
+	if err != nil {
+		log.WithError(err).Warn("failed to parse JWT")
+		return err
+	}
+
+	shared.Config.TeamID = parsedToken.TeamUUID
+	shared.Config.AuthToken = parsedToken.TeamAuth
+
+	err = team.ReportToTeam(true)
+	if err != nil {
+		log.WithError(err).Warn("failed to report to team")
+		return err
+	}
+
+	err = shared.SaveConfig()
+	if err != nil {
+		log.Errorf("Error saving config: %v", err)
+		return err
+	}
+	log.Infof("Device successfully linked to team: %s", parsedToken.TeamUUID)
+
 	return nil
 }
 
@@ -129,5 +133,6 @@ func parseJWT(token string) (*InviteClaims, error) {
 }
 
 func init() {
+	linkCmd.Flags().String("server", "https://dash.paretosecurity.com", "Server URL")
 	rootCmd.AddCommand(linkCmd)
 }

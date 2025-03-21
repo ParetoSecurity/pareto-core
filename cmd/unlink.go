@@ -16,6 +16,7 @@ var unlinkCmd = &cobra.Command{
 		log.Info("Unlinking device ...")
 		shared.Config.TeamID = ""
 		shared.Config.AuthToken = ""
+		shared.Config.ReportURL = ""
 		if err := shared.SaveConfig(); err != nil {
 			log.WithError(err).Warn("failed to save config")
 			if testing.Testing() {
