@@ -15,7 +15,7 @@ import (
 	shared "github.com/ParetoSecurity/agent/shared"
 )
 
-const reportURL = "https://dash.paretosecurity.com"
+var ReportURL = "https://dash.paretosecurity.com"
 
 type Report struct {
 	PassedCount       int                    `json:"passedCount"`
@@ -83,7 +83,7 @@ func ReportToTeam(initial bool) error {
 		report = NowReport(claims.All)
 	}
 	log.Debug(spew.Sdump(report))
-	err := requests.URL(reportURL).
+	err := requests.URL(ReportURL).
 		Pathf("/api/v1/team/%s/device", shared.Config.TeamID).
 		Method(method).
 		Header("X-Device-Auth", "Bearer "+shared.Config.AuthToken).

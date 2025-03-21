@@ -35,10 +35,15 @@ type InviteClaims struct {
 	jwt.RegisteredClaims
 }
 
+var serverURL string
+
 var linkCmd = &cobra.Command{
 	Use:   "link <url>",
 	Short: "Link team with this device",
 	Run: func(cc *cobra.Command, args []string) {
+		if serverURL != "" {
+			team.ReportURL = serverURL
+		}
 		if shared.IsRoot() {
 			log.Fatal("Please run this command as a normal user.")
 		}
@@ -129,5 +134,6 @@ func parseJWT(token string) (*InviteClaims, error) {
 }
 
 func init() {
+	linkCmd.Flags().StringVar(&serverURL, "server", "", "Server URL (default: https://dash.paretosecurity.com)")
 	rootCmd.AddCommand(linkCmd)
 }
