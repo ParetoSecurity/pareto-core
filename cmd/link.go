@@ -10,7 +10,6 @@ import (
 	"github.com/ParetoSecurity/agent/team"
 	"github.com/caarlos0/log"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 )
 
@@ -41,11 +40,7 @@ var linkCmd = &cobra.Command{
 	Run: func(cc *cobra.Command, args []string) {
 		customServer, _ := cc.Flags().GetString("server")
 
-		// Set the default server URL
-		shared.Config.ReportURL = "https://dash.paretosecurity.com"
-		if lo.IsNotEmpty(customServer) {
-			shared.Config.ReportURL = customServer
-		}
+		shared.Config.ReportURL = customServer
 
 		// Check if the user is root
 		if shared.IsRoot() {
@@ -138,6 +133,6 @@ func parseJWT(token string) (*InviteClaims, error) {
 }
 
 func init() {
-	linkCmd.Flags().String("server", "", "Server URL (default: https://dash.paretosecurity.com)")
+	linkCmd.Flags().String("server", "https://dash.paretosecurity.com", "Server URL")
 	rootCmd.AddCommand(linkCmd)
 }
