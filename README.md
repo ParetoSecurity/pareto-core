@@ -37,6 +37,72 @@ paretosecurity check
 <details>
 <summary>
   
+### Install from nixpkgs
+
+</summary>
+
+#### Install CLI from nixpkgs
+
+```ShellSession
+$ nix-env -iA nixpkgs.paretosecurity
+```
+
+or
+
+```ShellSession
+$ nix profile install nixpkgs#paretosecurity
+```
+
+</details>
+
+<details>
+<summary>
+  
+### Install on NixOS
+
+</summary>
+
+#### Install NixOS module
+
+Add this to your NixOS configuration:
+
+```nix
+{
+  services.paretosecurity.enable = true;
+}
+```
+
+This will install the agent and its root helper so you don't need `sudo` to run it.
+
+#### Install CLI only in NixOS via nixpkgs
+
+Add this to your NixOS configuration:
+
+```nix
+{ pkgs, ... }: {
+  environment.systemPackages = [ pkgs.paretosecurity ];
+}
+```
+
+#### Run checks
+
+```ShellSession
+$ paretosecurity check
+```
+
+This will analyze your system and provide a security report highlighting potential improvements and vulnerabilities.
+
+If you did not install the root helper, you need to run it with `sudo`:
+
+```ShellSession
+$ sudo paretosecurity check
+```
+
+</details>
+
+<details>
+<summary>
+  
 ### Install via nix-channel
 
 </summary>
@@ -46,16 +112,6 @@ As root run:
 ```ShellSession
 $ sudo nix-channel --add https://github.com/ParetoSecurity/agent/archive/main.tar.gz paretosecurity
 $ sudo nix-channel --update
-```
-
-#### Install module via nix-channel
-
-Then add the following to your `configuration.nix` in the `imports` list:
-
-```nix
-{
-  imports = [ <paretosecurity/modules/paretosecurity.nix> ];
-}
 ```
 
 #### Install CLI via nix-channel
@@ -86,27 +142,6 @@ This will analyze your system and provide a security report highlighting potenti
 
 </summary>
 
-#### Install module via Flakes
-
-```nix
-{
-  inputs.paretosecurity.url = "github:paretosecurity/pareto-core";
-  # optional, not necessary for the module
-  #inputs.paretosecurity.inputs.nixpkgs.follows = "nixpkgs";
-
-  outputs = { self, nixpkgs, paretosecurity }: {
-    # change `yourhostname` to your actual hostname
-    nixosConfigurations.yourhostname = nixpkgs.lib.nixosSystem {
-      # change to your system:
-      system = "x86_64-linux";
-      modules = [
-        ./configuration.nix
-        paretosecurity.nixosModules.default
-      ];
-    };
-  };
-}
-```
 
 #### Install CLI via Flakes
 
@@ -123,7 +158,7 @@ e.g. inside your `flake.nix` file:
 
 ```nix
 {
-  inputs.paretosecurity.url = "github:paretosecurity/pareto-core";
+  inputs.paretosecurity.url = "github:paretosecurity/agent";
   # ...
 
   outputs = { self, nixpkgs, paretosecurity }: {
