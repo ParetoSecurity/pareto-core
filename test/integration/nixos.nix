@@ -40,7 +40,7 @@ pkgs.testers.runNixOSTest {
       };
     };
 
-    systemd.user.services."pareto-core-hourly" = {
+    systemd.user.services."paretosecurity-hourly" = {
       wantedBy = ["timers.target"];
       serviceConfig = {
         Type = "oneshot";
@@ -49,7 +49,7 @@ pkgs.testers.runNixOSTest {
       };
     };
 
-    systemd.user.timers."pareto-core-hourly" = {
+    systemd.user.timers."paretosecurity-hourly" = {
       wantedBy = ["timers.target"];
       timerConfig = {
         OnCalendar = "hourly";
