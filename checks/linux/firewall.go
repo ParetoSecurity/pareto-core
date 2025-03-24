@@ -1,7 +1,9 @@
 package checks
 
 import (
+	"bufio"
 	"os/exec"
+	"strconv"
 	"strings"
 
 	"github.com/ParetoSecurity/agent/shared"
@@ -39,6 +41,80 @@ func (f *Firewall) checkFirewalld() bool {
 	return output == "active"
 }
 
+// checkIptables checks if iptables is active
+func (f *Firewall) checkIptables() bool {
+	output, err := shared.RunCommand("iptables", "-L", "INPUT", "--line-numbers")
+	if err != nil {
+		log.WithError(err).WithField("output", output).Warn("Failed to check iptables status")
+		return false
+	}
+	log.WithField("output", output).Debug("Iptables status")
+
+	// Define a struct to hold iptables rule information
+	type IptablesRule struct {
+		Number      int
+		Target      string
+		Protocol    string
+		Options     string
+		Source      string
+		Destination string
+	}
+
+	var rules []IptablesRule
+	var policy string
+
+	// Parse the output to check if there are any rules or chains defined
+	scanner := bufio.NewScanner(strings.NewReader(output))
+	lineCount := 0
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		lineCount++
+
+		// Extract policy from the first line
+		if lineCount == 1 && strings.Contains(line, "Chain INPUT") {
+			if strings.Contains(line, "policy ACCEPT") {
+				policy = "ACCEPT"
+			} else if strings.Contains(line, "policy DROP") {
+				policy = "DROP"
+			} else if strings.Contains(line, "policy REJECT") {
+				policy = "REJECT"
+			}
+			continue
+		}
+
+		// Skip the header line
+		if lineCount == 2 {
+			continue
+		}
+
+		// Parse rule lines
+		fields := strings.Fields(line)
+		if len(fields) >= 6 {
+			ruleNum, err := strconv.Atoi(fields[0])
+			if err != nil {
+				continue // Skip lines that don't start with a number
+			}
+
+			rule := IptablesRule{
+				Number:      ruleNum,
+				Target:      fields[1],
+				Protocol:    fields[2],
+				Options:     fields[3],
+				Source:      fields[4],
+				Destination: fields[5],
+			}
+			rules = append(rules, rule)
+		}
+	}
+
+	log.WithField("rules_count", len(rules)).WithField("policy", policy).Debug("Iptables has active rules or restrictive policy")
+
+	// Firewall is active if there are rules or the policy is restrictive
+	foundRules := len(rules) > 0
+	return foundRules
+}
+
 // Run executes the check
 func (f *Firewall) Run() error {
 	if f.RequiresRoot() && !shared.IsRoot() {
@@ -56,12 +132,17 @@ func (f *Firewall) Run() error {
 	log.Debug("Running check directly")
 	f.passed = false
 
+	// Check if uf
 	if !f.passed {
 		f.passed = f.checkUFW()
 	}
 
 	if !f.passed {
 		f.passed = f.checkFirewalld()
+	}
+
+	if !f.passed {
+		f.passed = f.checkIptables()
 	}
 
 	if !f.passed {
