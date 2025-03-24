@@ -65,6 +65,11 @@ func TestDockerAccess_IsRunnable(t *testing.T) {
 			expectedResult: true,
 		},
 		{
+			name:           "Docker is installed, but failed to connect",
+			commandOutput:  "Docker Version 20.10.7, Cannot connect to the Docker daemon",
+			expectedResult: false,
+		},
+		{
 			name:           "Docker is not installed",
 			commandOutput:  "",
 			expectedResult: false,
