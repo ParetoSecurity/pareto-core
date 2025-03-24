@@ -45,9 +45,18 @@ func (f *DockerAccess) Passed() bool {
 // CanRun returns whether the check can run
 func (f *DockerAccess) IsRunnable() bool {
 
+	// Check if Docker is installed
 	out, _ := shared.RunCommand("docker", "version")
 	if !strings.Contains(out, "Version") {
 		f.status = "Docker is not installed"
+		return false
+	}
+
+	// Check if the user has access to the Docker daemon
+	// This is a workaround for the issue where the Docker daemon is running as manager only (via systemd)
+	// and the user does not access to the Docker daemon
+	if strings.Contains(out, "Cannot connect to the Docker daemon") {
+		f.status = "No access to Docker daemon, with the current user"
 		return false
 	}
 
