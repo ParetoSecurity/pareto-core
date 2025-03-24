@@ -2,12 +2,12 @@
 package shared
 
 import (
+	"crypto/rsa"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 
-	sharedG "github.com/ParetoSecurity/agent/shared"
+	"golang.org/x/crypto/ssh" // Import the crypto/ssh package
 )
 
 // KeyType represents the type of SSH key.
@@ -28,18 +28,12 @@ const (
 	Rsa KeyType = "RSA"
 )
 
-// KeyInfo holds information about a key.
-type KeyInfo struct {
-	strength  int
-	signature string
-	keyType   KeyType
-}
-
 // SSHKeysAlgo runs the SSH keys algorithm.
 type SSHKeysAlgo struct {
 	passed  bool
 	sshKey  string
 	sshPath string
+	details string
 }
 
 // Name returns the name of the check
@@ -47,44 +41,30 @@ func (f *SSHKeysAlgo) Name() string {
 	return "SSH keys have sufficient algorithm strength"
 }
 
-func parseKeyInfo(output string) KeyInfo {
-	parts := strings.Fields(strings.TrimSpace(output))
-	if len(parts) < 4 {
-		return KeyInfo{}
-	}
-
-	strength, _ := strconv.Atoi(parts[0])
-	keyType := strings.ToUpper(parts[len(parts)-1])
-	keyType = strings.Map(func(r rune) rune {
-		if (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') || (r >= '0' && r <= '9') {
-			return r
-		}
-		return -1
-	}, keyType)
-
-	return KeyInfo{
-		strength:  strength,
-		signature: parts[1],
-		keyType:   KeyType(keyType),
-	}
-}
-
 func (f *SSHKeysAlgo) isKeyStrong(path string) bool {
-	output, err := sharedG.RunCommand("ssh-keygen", "-l", "-f", path)
+	keyBytes, err := os.ReadFile(path)
 	if err != nil {
 		return false
 	}
 
-	info := parseKeyInfo(string(output))
-	switch info.keyType {
-	case Rsa:
-		return info.strength >= 2048
-	case Dsa:
-		return info.strength >= 8192
-	case Ecdsa, EcdsaSk:
-		return info.strength >= 521
-	case Ed25519, Ed25519Sk:
-		return info.strength >= 256
+	key, err := ssh.ParsePublicKey(keyBytes)
+	if err != nil {
+		return false
+	}
+
+	switch key.Type() {
+	case "ssh-rsa":
+		rsaKey, ok := key.(ssh.CryptoPublicKey).CryptoPublicKey().(*rsa.PublicKey)
+		if !ok {
+			return false
+		}
+		return rsaKey.N.BitLen() >= 2048
+	case "ssh-dss":
+		return false // DSS is considered weak
+	case "ecdsa-sha2-nistp256", "ecdsa-sha2-nistp384", "ecdsa-sha2-nistp521":
+		return true // ECDSA is considered strong enough
+	case "ssh-ed25519":
+		return true // Ed25519 is considered strong
 	default:
 		return false
 	}
@@ -133,6 +113,7 @@ func (f *SSHKeysAlgo) Passed() bool {
 
 // IsRunnable returns whether SSHKeysAlgo is runnable.
 func (f *SSHKeysAlgo) IsRunnable() bool {
+
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return false
@@ -157,6 +138,7 @@ func (f *SSHKeysAlgo) IsRunnable() bool {
 			}
 		}
 	}
+	f.details = "No private keys found in the .ssh directory"
 	return false
 }
 
