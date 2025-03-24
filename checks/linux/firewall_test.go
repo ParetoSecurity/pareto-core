@@ -182,3 +182,66 @@ func TestFirewall_PassedMessage(t *testing.T) {
 		t.Errorf("Expected PassedMessage %s, got %s", expectedPassedMessage, f.PassedMessage())
 	}
 }
+
+func TestCheckIptables(t *testing.T) {
+	tests := []struct {
+		name           string
+		mockOutput     string
+		mockError      error
+		expectedResult bool
+	}{
+		{
+			name: "Iptables has rules",
+			mockOutput: `Chain INPUT (policy ACCEPT)
+num  target     prot opt source               destination         
+1    ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0           tcp dpt:22
+2    DROP       all  --  10.0.0.0/8           0.0.0.0/0           
+`,
+			mockError:      nil,
+			expectedResult: true,
+		},
+		{
+			name: "Iptables has no rules",
+			mockOutput: `Chain INPUT (policy ACCEPT)
+num  target     prot opt source               destination         
+`,
+			mockError:      nil,
+			expectedResult: false,
+		},
+		{
+			name:           "Iptables command error",
+			mockOutput:     "",
+			mockError:      assert.AnError,
+			expectedResult: false,
+		},
+		{
+			name: "Malformed rule line",
+			mockOutput: `Chain INPUT (policy ACCEPT)
+num  target     prot opt source               destination         
+invalid line
+`,
+			mockError:      nil,
+			expectedResult: false,
+		},
+		{
+			name: "Non-numeric rule number",
+			mockOutput: `Chain INPUT (policy ACCEPT)
+num  target     prot opt source               destination         
+abc  ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0           
+`,
+			mockError:      nil,
+			expectedResult: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			shared.RunCommandMocks = convertCommandMapToMocks(map[string]string{
+				"iptables -L INPUT --line-numbers": tt.mockOutput,
+			})
+			f := &Firewall{}
+			result := f.checkIptables()
+			assert.Equal(t, tt.expectedResult, result)
+		})
+	}
+}
