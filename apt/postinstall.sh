@@ -29,47 +29,6 @@ fi
 
 # Check for systemd
 if command -v systemctl >/dev/null 2>&1; then
-    # Create socket unit
-    cat <<'EOF' | tee /etc/systemd/system/paretosecurity.socket >/dev/null
-[Unit]
-Description=Socket for paretosecurity
-
-[Socket]
-ListenStream=/var/run/paretosecurity.sock
-SocketMode=0666
-Accept=no
-
-[Install]
-WantedBy=sockets.target
-EOF
-
-    # Create service unit
-    cat <<'EOF' | tee /etc/systemd/system/paretosecurity.service >/dev/null
-[Unit]
-Description=Service for paretosecurity
-Requires=paretosecurity.socket
-
-[Service]
-ExecStart=/usr/bin/paretosecurity helper --verbose --socket /var/run/paretosecurity.sock
-User=root
-Group=root
-StandardInput=socket
-Type=oneshot
-RemainAfterExit=no
-StartLimitInterval=1
-StartLimitBurst=100
-
-# Disabled to allow checking firewall rules
-#ReadOnlyPaths=/
-
-ProtectSystem=full
-ProtectHome=yes
-StandardOutput=journal
-StandardError=journal
-
-[Install]
-WantedBy=multi-user.target
-EOF
 
     # Stop and disable old pareto-core services if they exist
     systemctl stop pareto-core.service 2>/dev/null || true

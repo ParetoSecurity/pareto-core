@@ -1,0 +1,9 @@
+[Unit]
+Description=Socket for paretosecurity agent <-> root helper communication
+
+[Socket]
+ListenStream=/var/run/paretosecurity.sock
+SocketMode=0666
+
+[Install]
+WantedBy=sockets.target

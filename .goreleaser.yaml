@@ -42,9 +42,9 @@ archives:
     formats:
     - zip
 nfpms:
-- vendor: niteo.co
+- vendor: paretosecurity.com
   homepage: https://github.com/ParetoSecurity/agent
-  maintainer: Niteo
+  maintainer: Pareto Securty
   description: Automatically audit your Linux machine for basic security hygiene.
   license: GPL3
   formats: [ deb, rpm, apk, archlinux ]
@@ -55,6 +55,10 @@ nfpms:
   scripts:
     postinstall: "apt/postinstall.sh"
   contents:
+  - src: apt/paretosecurity.socket
+    dst: /etc/systemd/system/paretosecurity.socket
+  - src: apt/paretosecurity.service
+    dst: /etc/systemd/system/paretosecurity.service
   - src: apt/ParetoSecurity.desktop
     dst: /usr/share/applications/ParetoSecurity.desktop
   - src: apt/ParetoSecurityLink.desktop
