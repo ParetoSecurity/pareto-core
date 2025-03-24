@@ -3,10 +3,12 @@ package shared
 
 import (
 	"crypto/rsa"
+
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/caarlos0/log"
 	"golang.org/x/crypto/ssh" // Import the crypto/ssh package
 )
 
@@ -42,13 +44,14 @@ func (f *SSHKeysAlgo) Name() string {
 }
 
 func (f *SSHKeysAlgo) isKeyStrong(path string) bool {
-	keyBytes, err := os.ReadFile(path)
+	keyBytes, err := osReadFile(path)
 	if err != nil {
 		return false
 	}
 
 	key, err := ssh.ParsePublicKey(keyBytes)
 	if err != nil {
+		log.WithError(err).Warn("Failed to parse public key")
 		return false
 	}
 
@@ -167,6 +170,8 @@ func (f *SSHKeysAlgo) Status() string {
 	if f.Passed() {
 		return f.PassedMessage()
 	}
-
+	if f.details != "" {
+		return f.details
+	}
 	return "SSH key " + f.sshKey + " is using weak encryption"
 }
