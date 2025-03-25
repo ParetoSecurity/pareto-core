@@ -12,6 +12,7 @@ import (
 type SSHKeys struct {
 	passed     bool
 	failedKeys []string
+	details    string
 }
 
 // Name returns the name of the check
@@ -91,6 +92,7 @@ func (f *SSHKeys) IsRunnable() bool {
 			}
 		}
 	}
+	f.details = "No private keys found in .ssh directory"
 	return false
 
 }
@@ -119,6 +121,9 @@ func (f *SSHKeys) RequiresRoot() bool {
 func (f *SSHKeys) Status() string {
 	if f.Passed() {
 		return f.PassedMessage()
+	}
+	if f.details != "" {
+		return f.details
 	}
 	return "Found unprotected SSH key(s): " + strings.Join(f.failedKeys, ", ")
 }

@@ -245,3 +245,73 @@ abc  ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0
 		})
 	}
 }
+
+func TestFirewall_fwCmdsAreAvailable(t *testing.T) {
+
+	tests := []struct {
+		name           string
+		mockLookPath   func(string) (string, error)
+		expectedResult bool
+		expectedStatus string
+	}{
+		{
+			name: "All firewall commands are available",
+			mockLookPath: func(cmd string) (string, error) {
+				return "/usr/bin/" + cmd, nil
+			},
+			expectedResult: true,
+			expectedStatus: "",
+		},
+		{
+			name: "Only UFW is available",
+			mockLookPath: func(cmd string) (string, error) {
+				if cmd == "ufw" {
+					return "/usr/bin/ufw", nil
+				}
+				return "", assert.AnError
+			},
+			expectedResult: true,
+			expectedStatus: "",
+		},
+		{
+			name: "Only firewalld is available",
+			mockLookPath: func(cmd string) (string, error) {
+				if cmd == "firewalld" {
+					return "/usr/bin/firewalld", nil
+				}
+				return "", assert.AnError
+			},
+			expectedResult: true,
+			expectedStatus: "",
+		},
+		{
+			name: "Only iptables is available",
+			mockLookPath: func(cmd string) (string, error) {
+				if cmd == "iptables" {
+					return "/usr/bin/iptables", nil
+				}
+				return "", assert.AnError
+			},
+			expectedResult: true,
+			expectedStatus: "",
+		},
+		{
+			name: "No firewall commands are available",
+			mockLookPath: func(cmd string) (string, error) {
+				return "", assert.AnError
+			},
+			expectedResult: false,
+			expectedStatus: "Neither ufw, firewalld nor iptables are present, check cannot run",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			lookPathMock = tt.mockLookPath
+			f := &Firewall{}
+			result := f.fwCmdsAreAvailable()
+			assert.Equal(t, tt.expectedResult, result)
+			assert.Equal(t, tt.expectedStatus, f.status)
+		})
+	}
+}
