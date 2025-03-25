@@ -8,7 +8,7 @@ import (
 	"go.uber.org/ratelimit"
 )
 
-var SocketPath = "/var/run/paretosecurity.sock"
+var SocketPath = "/run/paretosecurity.sock"
 var rateLimitCall = ratelimit.New(1)
 
 func IsSocketServicePresent() bool {

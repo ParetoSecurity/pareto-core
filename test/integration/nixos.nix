@@ -15,7 +15,7 @@ pkgs.testers.runNixOSTest {
     systemd.sockets."paretosecurity" = {
       wantedBy = ["sockets.target"];
       socketConfig = {
-        ListenStream = "/var/run/paretosecurity.sock";
+        ListenStream = "/run/paretosecurity.sock";
         SocketMode = "0666";
       };
     };
@@ -25,7 +25,7 @@ pkgs.testers.runNixOSTest {
       after = ["paretosecurity.socket"];
       wantedBy = ["multi-user.target"];
       serviceConfig = {
-        ExecStart = ["${flakePackage}/bin/paretosecurity" "helper" "--verbose" "--socket" "/var/run/paretosecurity.sock"];
+        ExecStart = ["${flakePackage}/bin/paretosecurity" "helper" "--verbose" "--socket" "/run/paretosecurity.sock"];
         User = "root";
         Group = "root";
         StandardInput = "socket";
