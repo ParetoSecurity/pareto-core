@@ -2,7 +2,7 @@
 Description=Socket for ParetoSecurity agent <-> root helper communication
 
 [Socket]
-ListenStream=/var/run/paretosecurity.sock
+ListenStream=/run/paretosecurity.sock
 SocketMode=0666
 
 [Install]
