@@ -14,21 +14,22 @@ import (
 )
 
 var checkCmd = &cobra.Command{
-	Use:   "check [--skip <uuid>]",
+	Use:   "check [--skip <uuid>] [--only <uuid>]",
 	Short: "Run checks on your system",
 	Run: func(cc *cobra.Command, args []string) {
 		skipUUIDs, _ := cc.Flags().GetStringArray("skip")
-
-		checkCommand(skipUUIDs)
+		onlyUUID, _ := cc.Flags().GetString("only")
+		checkCommand(skipUUIDs, onlyUUID)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(checkCmd)
 	checkCmd.Flags().StringArray("skip", []string{}, "skip checks by UUID")
+	checkCmd.Flags().String("only", "", "only run checks by UUID")
 }
 
-func checkCommand(skipUUIDs []string) {
+func checkCommand(skipUUIDs []string, onlyUUID string) {
 	if shared.IsRoot() {
 		log.Warn("Please run this command as a normal user, as it won't report all checks correctly.")
 	}
@@ -38,7 +39,7 @@ func checkCommand(skipUUIDs []string) {
 
 	done := make(chan struct{})
 	go func() {
-		runner.Check(ctx, claims.All, skipUUIDs)
+		runner.Check(ctx, claims.All, skipUUIDs, onlyUUID)
 		close(done)
 	}()
 
@@ -53,6 +54,13 @@ func checkCommand(skipUUIDs []string) {
 
 		// if checks failed, exit with a non-zero status code
 		if !shared.AllChecksPassed() {
+			// Log the failed checks
+			if failedChecks := shared.GetFailedChecks(); len(failedChecks) > 0 && verbose {
+				for _, check := range failedChecks {
+					log.Errorf("Failed check: %s (UUID: %s)", check.Name, check.UUID)
+				}
+			}
+			log.Info("You can use `paretosecurity check --verbose` to get a detailed report.")
 			os.Exit(1)
 		}
 

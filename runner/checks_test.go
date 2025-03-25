@@ -74,7 +74,7 @@ func TestCheckSuccess(t *testing.T) {
 		}},
 	}
 	ctx := context.Background()
-	Check(ctx, dummyClaims, []string{})
+	Check(ctx, dummyClaims, []string{}, "")
 
 	if atomic.LoadInt32(&dc.runCalled) != 1 {
 		t.Errorf("Expected Run to be called on DummyCheck, but it wasn't")
@@ -97,7 +97,7 @@ func TestCheckNotRunnable(t *testing.T) {
 		}},
 	}
 	ctx := context.Background()
-	Check(ctx, dummyClaims, []string{})
+	Check(ctx, dummyClaims, []string{}, "")
 	if atomic.LoadInt32(&dc.runCalled) != 0 {
 		t.Errorf("Expected Run NOT to be called on non-runnable DummyCheck, but it was")
 	}
@@ -123,7 +123,7 @@ func TestCheckContextCanceled(t *testing.T) {
 	cancel()
 	// Allow a short time for the goroutine to select context.Done.
 	time.Sleep(10 * time.Millisecond)
-	Check(ctx, dummyClaims, []string{})
+	Check(ctx, dummyClaims, []string{}, "")
 
 	if atomic.LoadInt32(&dc.runCalled) != 0 {
 		t.Errorf("Expected Run NOT to be called when context is canceled, but it was")
