@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"os"
 	"sync"
 
 	"github.com/fatih/color"
@@ -29,14 +30,15 @@ func wrapStatus(chk check.Check) string {
 // over its associated checks. Each check is executed in its own goroutine.
 func Check(ctx context.Context, claimsTorun []claims.Claim, skipUUIDs []string, onlyUUID string) {
 
+	var checkLogger = log.New(os.Stdout)
 	var wg sync.WaitGroup
-	log.Info("Starting checks...")
+	checkLogger.Info("Starting checks...")
 
 	for _, claim := range claimsTorun {
 		for _, chk := range claim.Checks {
 			// Skip checks that are skipped
 			if lo.Contains(skipUUIDs, chk.UUID()) {
-				log.Warn(fmt.Sprintf("%s: %s > %s", claim.Title, chk.Name(), fmt.Sprintf("%s Skipped by the command rule", color.YellowString("[SKIP]"))))
+				checkLogger.Warn(fmt.Sprintf("%s: %s > %s", claim.Title, chk.Name(), fmt.Sprintf("%s Skipped by the command rule", color.YellowString("[SKIP]"))))
 				continue
 			}
 			wg.Add(1)
@@ -49,13 +51,13 @@ func Check(ctx context.Context, claimsTorun []claims.Claim, skipUUIDs []string, 
 
 					// Skip checks that are not in the onlyUUID list
 					if onlyUUID != "" && onlyUUID != chk.UUID() {
-						log.Debug(fmt.Sprintf("%s: %s > %s", claim.Title, chk.Name(), fmt.Sprintf("%s Skipped by the command rule", color.YellowString("[SKIP]"))))
+						checkLogger.Debug(fmt.Sprintf("%s: %s > %s", claim.Title, chk.Name(), fmt.Sprintf("%s Skipped by the command rule", color.YellowString("[SKIP]"))))
 						return
 					}
 
 					// Skip checks that are not runnable
 					if !chk.IsRunnable() {
-						log.Warn(fmt.Sprintf("%s: %s > %s", claim.Title, chk.Name(), chk.Status()))
+						checkLogger.Warn(fmt.Sprintf("%s: %s > %s", claim.Title, chk.Name(), chk.Status()))
 						return
 					}
 
@@ -64,9 +66,9 @@ func Check(ctx context.Context, claimsTorun []claims.Claim, skipUUIDs []string, 
 					}
 
 					if chk.Passed() {
-						log.Info(fmt.Sprintf("%s: %s > %s", claim.Title, chk.Name(), wrapStatus(chk)))
+						checkLogger.Info(fmt.Sprintf("%s: %s > %s", claim.Title, chk.Name(), wrapStatus(chk)))
 					} else {
-						log.Warn(fmt.Sprintf("%s: %s > %s", claim.Title, chk.Name(), wrapStatus(chk)))
+						checkLogger.Warn(fmt.Sprintf("%s: %s > %s", claim.Title, chk.Name(), wrapStatus(chk)))
 					}
 
 					shared.UpdateLastState(shared.LastState{
@@ -84,7 +86,7 @@ func Check(ctx context.Context, claimsTorun []claims.Claim, skipUUIDs []string, 
 		log.WithError(err).Warn("failed to commit last state")
 	}
 
-	log.Info("Checks completed.")
+	checkLogger.Info("Checks completed.")
 }
 
 // PrintSchemaJSON constructs and prints a JSON schema generated from a slice of claims.
