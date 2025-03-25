@@ -37,7 +37,7 @@ require (
 	fyne.io/systray v1.11.0
 	github.com/caarlos0/log v0.4.8
 	github.com/carlmjohnson/requests v0.24.3
-	github.com/elastic/go-sysinfo v1.15.1
+	github.com/elastic/go-sysinfo v1.15.2
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
 	github.com/h2non/gock v1.2.0
