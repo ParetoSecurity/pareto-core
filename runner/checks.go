@@ -27,7 +27,7 @@ func wrapStatus(chk check.Check) string {
 //
 // It iterates over each claim provided in claimsTorun and, for each claim,
 // over its associated checks. Each check is executed in its own goroutine.
-func Check(ctx context.Context, claimsTorun []claims.Claim, skipUUIDs []string) {
+func Check(ctx context.Context, claimsTorun []claims.Claim, skipUUIDs []string, onlyUUID string) {
 
 	var wg sync.WaitGroup
 	log.Info("Starting checks...")
@@ -46,6 +46,12 @@ func Check(ctx context.Context, claimsTorun []claims.Claim, skipUUIDs []string) 
 				case <-ctx.Done():
 					return
 				default:
+
+					// Skip checks that are not in the onlyUUID list
+					if onlyUUID != "" && onlyUUID != chk.UUID() {
+						log.Debug(fmt.Sprintf("%s: %s > %s", claim.Title, chk.Name(), fmt.Sprintf("%s Skipped by the command rule", color.YellowString("[SKIP]"))))
+						return
+					}
 
 					// Skip checks that are not runnable
 					if !chk.IsRunnable() {
