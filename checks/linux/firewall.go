@@ -2,7 +2,6 @@ package checks
 
 import (
 	"bufio"
-	"os/exec"
 	"strconv"
 	"strings"
 
@@ -157,6 +156,18 @@ func (f *Firewall) Passed() bool {
 	return f.passed
 }
 
+func (f *Firewall) fwCmdsAreAvailable() bool {
+	// Check if ufw or firewalld are present
+	_, errUFW := lookPath("ufw")
+	_, errFirewalld := lookPath("firewalld")
+	_, errIptables := lookPath("iptables")
+	if errUFW != nil && errFirewalld != nil && errIptables != nil {
+		f.status = "Neither ufw, firewalld nor iptables are present, check cannot run"
+		return false
+	}
+	return true
+}
+
 // IsRunnable returns whether Firewall is runnable.
 func (f *Firewall) IsRunnable() bool {
 
@@ -166,15 +177,7 @@ func (f *Firewall) IsRunnable() bool {
 		return false
 	}
 
-	// Check if ufw or firewalld are present
-	_, errUFW := exec.LookPath("ufw")
-	_, errFirewalld := exec.LookPath("firewalld")
-	if errUFW != nil && errFirewalld != nil {
-		f.status = "Neither ufw nor firewalld are present, check cannot run"
-		return false
-	}
-
-	return true
+	return f.fwCmdsAreAvailable()
 }
 
 // UUID returns the UUID of the check
