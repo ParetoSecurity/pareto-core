@@ -5,3 +5,6 @@ Description=ParetoSecurity hourly runner
 ExecStart=/usr/bin/paretosecurity check
 StandardOutput=journal
 StandardError=journal
+
+[Install]
+WantedBy=user.target

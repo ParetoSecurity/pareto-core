@@ -6,3 +6,6 @@ ExecStart=/usr/bin/paretosecurity trayicon
 StandardOutput=journal
 StandardError=journal
 Type=simple
+
+[Install]
+WantedBy=graphical-session.target
