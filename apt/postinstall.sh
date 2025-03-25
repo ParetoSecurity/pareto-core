@@ -39,5 +39,9 @@ if command -v systemctl >/dev/null 2>&1; then
     # Reload systemd and enable socket
     systemctl daemon-reload
     systemctl enable paretosecurity.socket
-    systemctl start paretosecurity.socket
+
+    # Enable user services
+    systemctl --user enable paretosecurity-user.timer
+    systemctl --user enable paretosecurity-user.service
+    systemctl --user enable paretosecurity-trayicon.service
 fi
