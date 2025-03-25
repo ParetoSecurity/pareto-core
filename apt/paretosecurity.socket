@@ -1,5 +1,5 @@
 [Unit]
-Description=Socket for paretosecurity agent <-> root helper communication
+Description=Socket for ParetoSecurity agent <-> root helper communication
 
 [Socket]
 ListenStream=/var/run/paretosecurity.sock

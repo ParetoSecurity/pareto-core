@@ -1,0 +1,7 @@
+[Unit]
+Description=ParetoSecurity hourly runner
+
+[Service]
+ExecStart=/usr/bin/paretosecurity check
+StandardOutput=journal
+StandardError=journal

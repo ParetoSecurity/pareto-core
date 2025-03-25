@@ -65,6 +65,16 @@ nfpms:
     dst: /usr/share/applications/ParetoSecurityLink.desktop
   - src: assets/Mac_512pt@2x.png
     dst: /usr/share/icons/hicolor/512x512/apps/ParetoSecurity.png
+  - src: apt/paretosecurity.service
+    dst: /etc/systemd/system/paretosecurity.service
+  - src: apt/paretosecurity.socket
+    dst: /etc/systemd/system/paretosecurity.socket
+  - src: apt/paretosecurity-trayicon.service
+    dst: /etc/systemd/system/paretosecurity-trayicon.service
+  - src: apt/paretosecurity-user.service
+    dst: /usr/lib/systemd/user/paretosecurity-user.service
+  - src: apt/paretosecurity-user.timer
+    dst: /usr/lib/systemd/user/paretosecurity-user.timer
 changelog:
   sort: asc
   filters:
