@@ -71,6 +71,7 @@ func Check(ctx context.Context, claimsTorun []claims.Claim, skipUUIDs []string, 
 
 					shared.UpdateLastState(shared.LastState{
 						UUID:    chk.UUID(),
+						Name:    chk.Name(),
 						State:   chk.Passed(),
 						Details: chk.Status(),
 					})

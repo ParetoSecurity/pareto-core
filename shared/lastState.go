@@ -11,6 +11,7 @@ import (
 )
 
 type LastState struct {
+	Name    string `json:"name"`
 	UUID    string `json:"uuid"`
 	State   bool   `json:"state"`
 	Details string `json:"details"`
@@ -61,12 +62,26 @@ func AllChecksPassed() bool {
 	return true
 }
 
+// GetFailedChecks returns a slice of failed checks.
+func GetFailedChecks() []LastState {
+	mutex.RLock()
+	defer mutex.RUnlock()
+
+	var failedChecks []LastState
+	for _, state := range states {
+		if !state.State {
+			failedChecks = append(failedChecks, state)
+		}
+	}
+	return failedChecks
+}
+
 // PrintStates loads and prints all stored states with their UUIDs, state values, and details.
 func PrintStates() {
 	loadStates()
 
 	for uuid, state := range states {
-		log.Infof("UUID: %s, State: %v, Details: %s", uuid, state.State, state.Details)
+		log.Infof("Name: %s, UUID: %s, State: %v, Details: %s", state.Name, uuid, state.State, state.Details)
 	}
 }
 

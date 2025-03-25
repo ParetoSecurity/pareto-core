@@ -54,6 +54,13 @@ func checkCommand(skipUUIDs []string, onlyUUID string) {
 
 		// if checks failed, exit with a non-zero status code
 		if !shared.AllChecksPassed() {
+			// Log the failed checks
+			if failedChecks := shared.GetFailedChecks(); len(failedChecks) > 0 && verbose {
+				for _, check := range failedChecks {
+					log.Errorf("Failed check: %s (UUID: %s)", check.Name, check.UUID)
+				}
+			}
+			log.Info("You can use `paretosecurity check --verbose` to get a detailed report.")
 			os.Exit(1)
 		}
 
