@@ -44,7 +44,7 @@ archives:
 nfpms:
 - vendor: paretosecurity.com
   homepage: https://github.com/ParetoSecurity/agent
-  maintainer: Pareto Securty
+  maintainer: Pareto Security
   description: Automatically audit your Linux machine for basic security hygiene.
   license: GPL3
   formats: [ deb, rpm, apk, archlinux ]
