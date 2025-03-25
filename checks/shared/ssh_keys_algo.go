@@ -49,7 +49,7 @@ func (f *SSHKeysAlgo) isKeyStrong(path string) bool {
 		return false
 	}
 
-	key, err := ssh.ParsePublicKey(keyBytes)
+	key, _, _, _, err := ssh.ParseAuthorizedKey(keyBytes)
 	if err != nil {
 		log.WithError(err).Warn("Failed to parse public key")
 		return false

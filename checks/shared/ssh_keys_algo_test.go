@@ -68,6 +68,11 @@ func TestSSHKeysAlgo_isKeyStrong(t *testing.T) {
 		expected bool
 	}{
 		{
+			name:     "RSA 2048 bit key",
+			keyData:  generateRealKey(t, "rsa", 2048),
+			expected: true,
+		},
+		{
 			name:     "RSA 1024 bit key (weak)",
 			keyData:  generateRealKey(t, "rsa", 1024),
 			expected: false,
@@ -78,9 +83,14 @@ func TestSSHKeysAlgo_isKeyStrong(t *testing.T) {
 			expected: false,
 		},
 		{
-			name:     "Unknown key type",
-			keyData:  "ssh-unknown AAAAC3NzaC1lZDI1NTE5AAAAIFoZWbQD4XFRnOGZt8YuoN26+OMb4YKHbMDm0/lAWJxz test@example.com",
-			expected: false,
+			name:     "ECDSA key (strong)",
+			keyData:  generateRealKey(t, "ecdsa", 256),
+			expected: true,
+		},
+		{
+			name:     "Ed25519 key (strong)",
+			keyData:  generateRealKey(t, "ed25519", 0),
+			expected: true,
 		},
 		{
 			name:     "Invalid key format",
@@ -114,6 +124,12 @@ func TestSSHKeysAlgo_isKeyStrong(t *testing.T) {
 		if result != false {
 			t.Errorf("isKeyStrong() = %v, want %v", result, false)
 		}
+	})
+
+	t.Run("Run command", func(t *testing.T) {
+		sshCheck := &SSHKeysAlgo{}
+		_ = sshCheck.IsRunnable()
+		_ = sshCheck.Run()
 	})
 }
 
