@@ -1,0 +1,16 @@
+[Unit]
+Description=ParetoSecurity root helper
+
+[Service]
+ExecStart=/usr/bin/paretosecurity helper
+User=root
+Group=root
+StandardInput=socket
+Type=oneshot
+RemainAfterExit=no
+StartLimitInterval=1
+StartLimitBurst=100
+ProtectSystem=full
+ProtectHome=yes
+StandardOutput=journal
+StandardError=journal

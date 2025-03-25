@@ -1,0 +1,8 @@
+[Unit]
+Description=ParetoSecurity TrayIcon for desktop manager
+
+[Service]
+ExecStart=/usr/bin/paretosecurity trayicon
+StandardOutput=journal
+StandardError=journal
+Type=simple
