@@ -53,6 +53,8 @@
           inherit pkgs system flakePackage;
         };
 
+        checks.firewall = pkgs.testers.runNixOSTest ./test/integration/firewall.nix;
+
         packages.test-debian = testPackage {
           distro = "debian";
           version = "13";
