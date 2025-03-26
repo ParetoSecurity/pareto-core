@@ -1,7 +1,6 @@
 package checks
 
 import (
-	"os/exec"
 	"strings"
 
 	"github.com/ParetoSecurity/agent/shared"
@@ -36,20 +35,23 @@ func (f *PasswordToUnlock) checkKDE() bool {
 
 // Run executes the check
 func (f *PasswordToUnlock) Run() error {
+	anyCheckPerformed := false
+	allChecksPassed := true
+
 	// Check if running GNOME
-	if _, err := exec.LookPath("gsettings"); err == nil {
-		f.passed = f.checkGnome()
-		return nil
+	if _, err := lookPath("gsettings"); err == nil {
+		anyCheckPerformed = true
+		allChecksPassed = allChecksPassed && f.checkGnome()
 	}
 
 	// Check if running KDE
-	if _, err := exec.LookPath("kreadconfig5"); err == nil {
-		f.passed = f.checkKDE()
-		return nil
+	if _, err := lookPath("kreadconfig5"); err == nil {
+		anyCheckPerformed = true
+		allChecksPassed = allChecksPassed && f.checkKDE()
 	}
 
-	// Neither GNOME nor KDE found
-	f.passed = false
+	// Performed at least one check and all performed checks passed
+	f.passed = anyCheckPerformed && allChecksPassed
 	return nil
 }
 
