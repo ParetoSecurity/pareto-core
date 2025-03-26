@@ -13,18 +13,19 @@ import (
 
 var infoCmd = &cobra.Command{
 	Use:   "info",
-	Short: "Print the system and reports information",
+	Short: "Print the system information",
 	Run: func(cmd *cobra.Command, args []string) {
 
 		log.Infof("%s@%s %s", shared.Version, shared.Commit, shared.Date)
 		log.Infof("Built with %s", runtime.Version())
+		log.Infof("Team: %s\n", shared.Config.TeamID)
 
 		device := shared.CurrentReportingDevice()
 		jsonOutput, err := json.MarshalIndent(device, "", "  ")
 		if err != nil {
 			log.Warn("Failed to marshal host info")
 		}
-		log.Infof("Device Info: %s", string(jsonOutput))
+		log.Infof("Device Info: %s\n", string(jsonOutput))
 
 		hostInfo, err := sysinfo.Host()
 		if err != nil {
@@ -37,11 +38,7 @@ var infoCmd = &cobra.Command{
 		if err != nil {
 			log.Warn("Failed to marshal host info")
 		}
-		log.Infof("Host Info: %s", string(jsonOutput))
-
-		// Print the status of the checks
-		log.Infof("Checks Status:")
-		shared.PrintStates()
+		log.Infof("Host Info: %s\n", string(jsonOutput))
 
 		os.Exit(0)
 	},

@@ -1,12 +1,14 @@
 package shared
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"sync"
 	"time"
 
 	"github.com/caarlos0/log"
+	"github.com/olekukonko/tablewriter"
 	"github.com/pelletier/go-toml"
 )
 
@@ -80,9 +82,33 @@ func GetFailedChecks() []LastState {
 func PrintStates() {
 	loadStates()
 
+	fmt.Printf("Loaded %d states from %s\n", len(states), statePath)
+	fmt.Printf("Last modified time: %s\n\n", lastModTime.Format(time.RFC3339))
+
+	data := [][]string{}
 	for uuid, state := range states {
-		log.Infof("Name: %s, UUID: %s, State: %v, Details: %s", state.Name, uuid, state.State, state.Details)
+		stateStr := "Pass"
+		if !state.State {
+			stateStr = "Fail"
+		}
+		data = append(data, []string{uuid, state.Name, stateStr, state.Details})
 	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"UUID", "Name", "State", "Details"})
+	table.SetAutoWrapText(false)
+	table.SetAutoFormatHeaders(true)
+	table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
+	table.SetAlignment(tablewriter.ALIGN_LEFT)
+	table.SetCenterSeparator("")
+	table.SetColumnSeparator("")
+	table.SetRowSeparator("")
+	table.SetHeaderLine(false)
+	table.SetBorder(false)
+	table.SetTablePadding("\t")
+	table.SetNoWhiteSpace(true)
+	table.AppendBulk(data)
+	table.Render()
 }
 
 // UpdateState updates the LastState struct in the in-memory map and commits to the TOML file.
