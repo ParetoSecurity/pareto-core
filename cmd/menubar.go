@@ -111,8 +111,8 @@ func addOptions() {
 
 			} else {
 				if err := systemd.DisableTrayIcon(); err != nil {
-					log.WithError(err).Error("failed to enable timer")
-					Notify("Failed to enable tray icon, please check the logs for more information.")
+					log.WithError(err).Error("failed to disable tray icon")
+					Notify("Failed to disable tray icon, please check the logs for more information.")
 				}
 			}
 			if systemd.IsTrayIconEnabled() {
