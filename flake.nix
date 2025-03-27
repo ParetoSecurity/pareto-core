@@ -54,6 +54,7 @@
         };
 
         checks.firewall = pkgs.testers.runNixOSTest ./test/integration/firewall.nix;
+        checks.luks = pkgs.testers.runNixOSTest ./test/integration/luks.nix;
 
         packages.test-debian = testPackage {
           distro = "debian";
