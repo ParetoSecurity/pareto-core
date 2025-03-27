@@ -315,3 +315,15 @@ func TestFirewall_fwCmdsAreAvailable(t *testing.T) {
 		})
 	}
 }
+
+func TestFirewall_Run_NoFirewallCommands(t *testing.T) {
+	f := &Firewall{
+		status: "Neither ufw, firewalld nor iptables are present, check cannot run",
+		passed: false,
+	}
+
+	err := f.Run()
+	assert.NoError(t, err)
+	assert.False(t, f.Passed())
+	assert.Equal(t, "Neither ufw, firewalld nor iptables are present, check cannot run", f.status)
+}

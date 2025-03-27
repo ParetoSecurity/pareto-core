@@ -116,6 +116,11 @@ func (f *Firewall) checkIptables() bool {
 
 // Run executes the check
 func (f *Firewall) Run() error {
+	if f.status == "Neither ufw, firewalld nor iptables are present, check cannot run" {
+		f.passed = false
+		return nil
+	}
+
 	if f.RequiresRoot() && !shared.IsRoot() {
 		log.Debug("Running check via helper")
 		// Run as root
@@ -130,8 +135,6 @@ func (f *Firewall) Run() error {
 
 	log.Debug("Running check directly")
 	f.passed = false
-
-	// Check if uf
 	if !f.passed {
 		f.passed = f.checkUFW()
 	}
@@ -170,14 +173,18 @@ func (f *Firewall) fwCmdsAreAvailable() bool {
 
 // IsRunnable returns whether Firewall is runnable.
 func (f *Firewall) IsRunnable() bool {
-
 	can := shared.IsSocketServicePresent()
 	if !can {
 		f.status = "Root helper is not available, check cannot run. See https://paretosecurity.com/docs/linux/root-helper for more information."
 		return false
 	}
 
-	return f.fwCmdsAreAvailable()
+	if !f.fwCmdsAreAvailable() {
+		f.passed = false
+		return true
+	}
+
+	return true
 }
 
 // UUID returns the UUID of the check
