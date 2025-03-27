@@ -1,12 +1,14 @@
 package systemd
 
 import (
+	"strings"
+
 	"github.com/ParetoSecurity/agent/shared"
 )
 
 func isEnabled(service string) bool {
 	state, err := shared.RunCommand("systemctl", "--user", "is-enabled", service)
-	if state == "enabled" && err == nil {
+	if strings.TrimSpace(state) == "enabled" && err == nil {
 		return true
 	}
 	return false
