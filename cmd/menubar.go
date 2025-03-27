@@ -84,7 +84,7 @@ func addOptions() {
 			if !systemd.IsTimerEnabled() {
 				if err := systemd.EnableTimer(); err != nil {
 					log.WithError(err).Error("failed to enable timer")
-					Notify("Failed to enable timer, please check the logs for more information.")
+					Notify("Failed to disable timer, please check the logs for more information.")
 				}
 
 			} else {
@@ -97,6 +97,28 @@ func addOptions() {
 				mrun.Check()
 			} else {
 				mrun.Uncheck()
+			}
+		}
+	}()
+	mshow := mOptions.AddSubMenuItemCheckbox("Show tray icon", "Show tray icon", systemd.IsTrayIconEnabled())
+	go func() {
+		for range mshow.ClickedCh {
+			if !systemd.IsTrayIconEnabled() {
+				if err := systemd.EnableTrayIcon(); err != nil {
+					log.WithError(err).Error("failed to enable timer")
+					Notify("Failed to disable tray icon, please check the logs for more information.")
+				}
+
+			} else {
+				if err := systemd.DisableTrayIcon(); err != nil {
+					log.WithError(err).Error("failed to enable timer")
+					Notify("Failed to enable tray icon, please check the logs for more information.")
+				}
+			}
+			if systemd.IsTrayIconEnabled() {
+				mshow.Check()
+			} else {
+				mshow.Uncheck()
 			}
 		}
 	}()
