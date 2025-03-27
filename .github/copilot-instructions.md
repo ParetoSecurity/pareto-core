@@ -20,7 +20,10 @@ If I ask for adjustments to code I have provided you, do not repeat all of my co
 - When writing test that include http use gock for mocking
 - WhenMocking shared.RunCommand use follwoing mock :
 ```
-shared.RunCommandMocks = map[string]string{
-
+shared.RunCommandMocks = type RunCommandMock struct {
+	Command string
+	Args    []string
+	Out     string
+	Err     error
 }
 ```
