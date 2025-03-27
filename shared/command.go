@@ -29,15 +29,17 @@ func RunCommand(name string, arg ...string) (string, error) {
 	// Check if testing is enabled and enable harnessing
 	if testing.Testing() {
 		for _, mock := range RunCommandMocks {
-			if mock.Command == name && strings.Join(mock.Args, " ") == strings.Join(arg, " ") {
+			isCmd := mock.Command == name
+			isArg := strings.TrimSpace(strings.Join(mock.Args, " ")) == strings.TrimSpace(strings.Join(arg, " "))
+			if isCmd && isArg {
 				return mock.Out, mock.Err
 			}
 		}
-		return "", errors.New("RunCommand fixture not found: " + name + " " + strings.Join(arg, " "))
+		return "", errors.New("RunCommand fixture not found: " + name + " " + strings.TrimSpace(strings.Join(arg, " ")))
 	}
 
 	cmd := exec.Command(name, arg...)
 	output, err := cmd.CombinedOutput()
-	log.WithField("cmd", string(name+" "+strings.Join(arg, " "))).WithError(err).Debug(string(output))
+	log.WithField("cmd", string(name+" "+strings.TrimSpace(strings.Join(arg, " ")))).WithError(err).Debug(string(output))
 	return string(output), err
 }

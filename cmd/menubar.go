@@ -14,8 +14,9 @@ import (
 
 	"fyne.io/systray"
 	"github.com/ParetoSecurity/agent/check"
-	claims "github.com/ParetoSecurity/agent/claims"
-	shared "github.com/ParetoSecurity/agent/shared"
+	"github.com/ParetoSecurity/agent/claims"
+	"github.com/ParetoSecurity/agent/shared"
+	"github.com/ParetoSecurity/agent/systemd"
 	"github.com/caarlos0/log"
 	"github.com/pkg/browser"
 	"github.com/samber/lo"
@@ -74,6 +75,28 @@ func addOptions() {
 				mlink.Check()
 			} else {
 				mlink.Uncheck()
+			}
+		}
+	}()
+	mrun := mOptions.AddSubMenuItemCheckbox("Run checks in the background", "Run checks periodically in the background while the user is logged in.", systemd.IsTimerEnabled())
+	go func() {
+		for range mrun.ClickedCh {
+			if !systemd.IsTimerEnabled() {
+				if err := systemd.EnableTimer(); err != nil {
+					log.WithError(err).Error("failed to enable timer")
+					Notify("Failed to enable timer, please check the logs for more information.")
+				}
+
+			} else {
+				if err := systemd.DisableTimer(); err != nil {
+					log.WithError(err).Error("failed to enable timer")
+					Notify("Failed to enable timer, please check the logs for more information.")
+				}
+			}
+			if systemd.IsTimerEnabled() {
+				mrun.Check()
+			} else {
+				mrun.Uncheck()
 			}
 		}
 	}()
