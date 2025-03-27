@@ -100,7 +100,7 @@ func addOptions() {
 			}
 		}
 	}()
-	mshow := mOptions.AddSubMenuItemCheckbox("Show tray icon", "Show tray icon", systemd.IsTrayIconEnabled())
+	mshow := mOptions.AddSubMenuItemCheckbox("Run the tray icon at startup", "Show tray icon", systemd.IsTrayIconEnabled())
 	go func() {
 		for range mshow.ClickedCh {
 			if !systemd.IsTrayIconEnabled() {
