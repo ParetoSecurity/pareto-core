@@ -102,6 +102,8 @@ func (f *SSHKeysAlgo) Passed() bool {
 
 // IsRunnable returns whether SSHKeysAlgo is runnable.
 func (f *SSHKeysAlgo) IsRunnable() bool {
+	f.details = "No private keys found in the .ssh directory"
+
 	// Check if the user home directory exists
 	home, err := os.UserHomeDir()
 	if err != nil {
@@ -126,11 +128,12 @@ func (f *SSHKeysAlgo) IsRunnable() bool {
 			privateKeyPath := filepath.Join(sshPath, strings.TrimSuffix(file.Name(), ".pub"))
 			if _, err := os.Stat(privateKeyPath); err == nil {
 				log.WithField("file", file.Name()).Info("Found private key")
+				f.details = "Found private key: " + file.Name()
 				return true
 			}
 		}
 	}
-	f.details = "No private keys found in the .ssh directory"
+
 	return false
 }
 
