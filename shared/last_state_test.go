@@ -18,7 +18,7 @@ func TestCommitLastState_Success(t *testing.T) {
 
 	// Override statePath to a file in the temporary directory.
 	testFile := filepath.Join(tmpDir, "test.state")
-	statePath = testFile
+	StatePath = testFile
 
 	// Prepare a test state.
 	testState := LastState{
@@ -68,7 +68,7 @@ func TestCommitLastState_Error(t *testing.T) {
 		t.Fatalf("failed to create temp dir: %v", err)
 	}
 	defer os.RemoveAll(tmpDir)
-	statePath = tmpDir // os.Create on a directory should fail
+	StatePath = tmpDir // os.Create on a directory should fail
 
 	// Clear the states map.
 	mutex.Lock()
