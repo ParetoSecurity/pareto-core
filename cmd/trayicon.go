@@ -267,7 +267,7 @@ func updateClaim(claim claims.Claim, mClaim *systray.MenuItem) {
 	mClaim.SetTitle(fmt.Sprintf("✅ %s", claim.Title))
 }
 
-var menubarCmd = &cobra.Command{
+var trayiconCmd = &cobra.Command{
 	Use:   "trayicon",
 	Short: "Display the status of the checks in the system tray",
 	Run: func(cc *cobra.Command, args []string) {
@@ -281,5 +281,5 @@ var menubarCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(menubarCmd)
+	rootCmd.AddCommand(trayiconCmd)
 }
