@@ -232,6 +232,15 @@ abc  ACCEPT     tcp  --  0.0.0.0/0            0.0.0.0/0
 			mockError:      nil,
 			expectedResult: false,
 		},
+		{
+			name: "NixOS style custom chain",
+			mockOutput: `Chain INPUT (policy ACCEPT)
+num  target     prot opt source               destination         
+1    nixos-fw   all  --  anywhere             anywhere            
+`,
+			mockError:      nil,
+			expectedResult: true,
+		},
 	}
 
 	for _, tt := range tests {
