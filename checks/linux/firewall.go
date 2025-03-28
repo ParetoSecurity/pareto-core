@@ -107,11 +107,22 @@ func (f *Firewall) checkIptables() bool {
 		}
 	}
 
-	log.WithField("rules_count", len(rules)).WithField("policy", policy).Debug("Iptables has active rules or restrictive policy")
+	// Check for custom chains like nixos-fw
+	hasCustomChain := false
+	for _, rule := range rules {
+		if rule.Target != "ACCEPT" && rule.Target != "DROP" && rule.Target != "REJECT" {
+			hasCustomChain = true
+			break
+		}
+	}
 
-	// Firewall is active if there are rules or the policy is restrictive
-	foundRules := len(rules) > 0
-	return foundRules
+	log.WithField("rules_count", len(rules)).
+		WithField("policy", policy).
+		WithField("has_custom_chain", hasCustomChain).
+		Debug("Iptables has active rules or restrictive policy")
+
+	// Firewall is active if there are rules or the policy is restrictive or custom chains are used
+	return len(rules) > 0 || policy == "DROP" || policy == "REJECT" || hasCustomChain
 }
 
 // Run executes the check
