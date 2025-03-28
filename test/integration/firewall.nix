@@ -73,7 +73,7 @@ in {
   interactive.nodes.wideopen = {...}:
     ssh {port = 2221;} {};
 
-  interactive.nodes.iptables = {...}:
+  interactive.nodes.walled = {...}:
     ssh {port = 2222;} {};
 
   testScript = ''
