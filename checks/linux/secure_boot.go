@@ -59,6 +59,7 @@ func (f *SecureBoot) IsRunnable() bool {
 		f.status = "System is not running in UEFI mode"
 		return true
 	}
+	f.status = "SecureBoot check is not runnable, system is not in UEFI mode"
 	return false
 }
 
