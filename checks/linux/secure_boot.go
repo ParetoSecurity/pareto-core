@@ -39,11 +39,9 @@ func (f *SecureBoot) Run() error {
 	// Value of 1 means enabled, 0 means disabled
 	if len(data) >= 5 && data[4] == 1 {
 		f.passed = true
-		f.status = f.PassedMessage()
 		return nil
 	}
 	f.passed = false
-	f.status = f.FailedMessage()
 
 	return nil
 }
@@ -57,10 +55,9 @@ func (f *SecureBoot) Passed() bool {
 func (f *SecureBoot) IsRunnable() bool {
 	if _, err := osStat("/sys/firmware/efi/efivars"); os.IsNotExist(err) {
 		f.status = "System is not running in UEFI mode"
-		return true
+		return false
 	}
-	f.status = "SecureBoot check is not runnable, system is not in UEFI mode"
-	return false
+	return true
 }
 
 // UUID returns the UUID of the check
@@ -85,5 +82,11 @@ func (f *SecureBoot) RequiresRoot() bool {
 
 // Status returns the status of the check
 func (f *SecureBoot) Status() string {
-	return f.status
+	if f.status != "" {
+		return f.status
+	}
+	if f.passed {
+		return f.PassedMessage()
+	}
+	return f.FailedMessage()
 }
