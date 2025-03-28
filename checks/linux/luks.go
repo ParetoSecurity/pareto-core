@@ -85,6 +85,7 @@ func maybeCryptoViaLuks() bool {
 	for scanner.Scan() {
 		line := scanner.Text()
 		if strings.Contains(line, "crypt") {
+			log.WithField("line", line).Debug("LUKS encryption detected")
 			return true
 		}
 	}
@@ -104,6 +105,7 @@ func maybeCryptoViaKernel() bool {
 		if strings.HasPrefix(param, "cryptdevice=") {
 			parts := strings.Split(param, ":")
 			if len(parts) == 3 && parts[2] == "root" {
+				log.WithField("param", param).Debug("Kernel crypto parameters detected")
 				return true
 			}
 		}
