@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	"github.com/ParetoSecurity/agent/shared"
+	"github.com/caarlos0/log"
 )
 
 // PasswordToUnlock represents a check to ensure that a password is required to unlock the screen.
@@ -17,20 +18,25 @@ func (f *PasswordToUnlock) Name() string {
 }
 
 func (f *PasswordToUnlock) checkGnome() bool {
-
 	out, err := shared.RunCommand("gsettings", "get", "org.gnome.desktop.screensaver", "lock-enabled")
 	if err != nil {
+		log.WithError(err).Debug("Failed to check GNOME screensaver settings")
 		return false
 	}
-	return strings.TrimSpace(string(out)) == "true"
+	result := strings.TrimSpace(string(out)) == "true"
+	log.WithField("setting", out).WithField("passed", result).Debug("GNOME screensaver lock check")
+	return result
 }
 
 func (f *PasswordToUnlock) checkKDE() bool {
 	out, err := shared.RunCommand("kreadconfig5", "--file", "kscreenlockerrc", "--group", "Daemon", "--key", "Autolock")
 	if err != nil {
+		log.WithError(err).Debug("Failed to check KDE screenlocker settings")
 		return false
 	}
-	return strings.TrimSpace(string(out)) == "true"
+	result := strings.TrimSpace(string(out)) == "true"
+	log.WithField("setting", out).WithField("passed", result).Debug("KDE screenlocker check")
+	return result
 }
 
 // Run executes the check
@@ -42,12 +48,16 @@ func (f *PasswordToUnlock) Run() error {
 	if _, err := lookPath("gsettings"); err == nil {
 		anyCheckPerformed = true
 		allChecksPassed = allChecksPassed && f.checkGnome()
+	} else {
+		log.Debug("GNOME environment not detected for screensaver lock check")
 	}
 
 	// Check if running KDE
 	if _, err := lookPath("kreadconfig5"); err == nil {
 		anyCheckPerformed = true
 		allChecksPassed = allChecksPassed && f.checkKDE()
+	} else {
+		log.Debug("KDE environment not detected for screensaver lock check")
 	}
 
 	// Performed at least one check and all performed checks passed
