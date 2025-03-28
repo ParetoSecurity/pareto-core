@@ -2,9 +2,6 @@ package checks
 
 import (
 	"bufio"
-	"bytes"
-	"os"
-	"os/exec"
 	"strings"
 
 	"github.com/ParetoSecurity/agent/shared"
@@ -13,7 +10,6 @@ import (
 
 type EncryptingFS struct {
 	passed bool
-	status string
 }
 
 // Name returns the name of the check
@@ -28,11 +24,7 @@ func (f *EncryptingFS) Passed() bool {
 
 // CanRun returns whether the check can run
 func (f *EncryptingFS) IsRunnable() bool {
-	can := shared.IsSocketServicePresent()
-	if !can {
-		f.status = "Root helper is not available, check cannot run. See https://paretosecurity.com/docs/linux/root-helper for more information."
-	}
-	return can
+	return true
 }
 
 // UUID returns the UUID of the check
@@ -57,62 +49,16 @@ func (f *EncryptingFS) RequiresRoot() bool {
 
 // Run executes the check
 func (f *EncryptingFS) Run() error {
+	f.passed = false
 
-	if f.RequiresRoot() && !shared.IsRoot() {
-		log.Debug("Running check via helper")
-		// Run as root
-		passed, err := shared.RunCheckViaHelper(f.UUID())
-		if err != nil {
-			log.WithError(err).Warn("Failed to run check via helper")
-			return err
-		}
-		f.passed = passed
-		return nil
+	// Check if the system is using LUKS
+	if maybeCryptoViaLuks() {
+		f.passed = true
 	}
-	log.Debug("Running check directly")
-	encryptedDevices := make(map[string]string)
-
-	// Read crypttab to get encrypted devices
-	crypttab, err := os.Open("/etc/crypttab")
-	if err == nil {
-		scanner := bufio.NewScanner(crypttab)
-		for scanner.Scan() {
-			line := scanner.Text()
-			if strings.HasPrefix(line, "#") || line == "" {
-				continue
-			}
-			fields := strings.Fields(line)
-			if len(fields) >= 2 {
-				encryptedDevices[fields[0]] = strings.TrimPrefix(strings.Trim(fields[1], `"`), "UUID=")
-			}
-		}
-		crypttab.Close()
+	// Check if the system is using kernel parameters for encryption
+	if maybeCryptoViaKernel() {
+		f.passed = true
 	}
-	log.WithField("encryptedDevices", encryptedDevices).Debug("Found encrypted devices")
-	cmd := exec.Command("blkid")
-	output, err := cmd.Output()
-	if err != nil {
-		log.WithError(err).Warn("Failed to run blkid")
-		return err
-	}
-
-	scanner := bufio.NewScanner(bytes.NewReader(output))
-	for scanner.Scan() {
-		line := scanner.Text()
-		if strings.Contains(line, `TYPE="crypto_LUKS"`) {
-			log.WithField("line", line).Debug("Found encrypted device")
-			for _, uuid := range encryptedDevices {
-				if strings.Contains(line, uuid) {
-					f.passed = true
-					f.status = f.PassedMessage()
-					return nil
-				}
-			}
-		}
-	}
-
-	f.passed = maybeCryptoViaKernel()
-	f.status = f.FailedMessage()
 
 	return nil
 }
@@ -122,7 +68,26 @@ func (f *EncryptingFS) Status() string {
 	if f.Passed() {
 		return f.PassedMessage()
 	}
-	return f.status
+	return f.FailedMessage()
+}
+
+func maybeCryptoViaLuks() bool {
+	// Check if the system is using LUKS
+	lsblk, err := shared.RunCommand("lsblk", "-o", "TYPE,MOUNTPOINT")
+	if err != nil {
+		log.WithError(err).Warn("Failed to run lsblk command")
+		return false
+	}
+
+	scanner := bufio.NewScanner(strings.NewReader(lsblk))
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.Contains(line, "crypt") {
+			return true
+		}
+	}
+	log.WithField("output", lsblk).Warn("Failed to scan lsblk output")
+	return false
 }
 
 func maybeCryptoViaKernel() bool {
