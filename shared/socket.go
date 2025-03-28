@@ -19,11 +19,11 @@ func IsSocketServicePresent() bool {
 func RunCheckViaHelper(uuid string) (bool, error) {
 
 	rateLimitCall.Take()
-	log.WithField("uuid", uuid).Debug("Running check via helper")
+	log.WithField("uuid", uuid).Debug("Running check via root helper")
 
 	conn, err := net.Dial("unix", SocketPath)
 	if err != nil {
-		log.WithError(err).Warn("Failed to connect to helper")
+		log.WithError(err).Warn("Failed to connect to root helper")
 		return false, err
 	}
 	defer conn.Close()

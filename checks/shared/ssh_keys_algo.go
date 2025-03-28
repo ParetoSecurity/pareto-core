@@ -12,24 +12,6 @@ import (
 	"golang.org/x/crypto/ssh" // Import the crypto/ssh package
 )
 
-// KeyType represents the type of SSH key.
-type KeyType string
-
-const (
-	// Ed25519 is the Ed25519 key algorithm.
-	Ed25519 KeyType = "ED25519"
-	// Ed25519Sk is the Ed25519-SK key algorithm.
-	Ed25519Sk KeyType = "ED25519-SK"
-	// Ecdsa is the ECDSA key algorithm.
-	Ecdsa KeyType = "ECDSA"
-	// EcdsaSk is the ECDSA-SK key algorithm.
-	EcdsaSk KeyType = "ECDSA-SK"
-	// Dsa is the DSA key algorithm.
-	Dsa KeyType = "DSA"
-	// Rsa is the RSA key algorithm.
-	Rsa KeyType = "RSA"
-)
-
 // SSHKeysAlgo runs the SSH keys algorithm.
 type SSHKeysAlgo struct {
 	passed  bool
@@ -66,9 +48,10 @@ func (f *SSHKeysAlgo) isKeyStrong(path string) bool {
 		return false // DSS is considered weak
 	case "ecdsa-sha2-nistp256", "ecdsa-sha2-nistp384", "ecdsa-sha2-nistp521":
 		return true // ECDSA is considered strong enough
-	case "ssh-ed25519":
+	case "ssh-ed25519", "sk-ssh-ed25519@openssh.com":
 		return true // Ed25519 is considered strong
 	default:
+		log.WithField("keyType", key.Type()).Warn("Unknown key type")
 		return false
 	}
 }

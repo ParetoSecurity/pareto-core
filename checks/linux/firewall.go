@@ -122,11 +122,11 @@ func (f *Firewall) Run() error {
 	}
 
 	if f.RequiresRoot() && !shared.IsRoot() {
-		log.Debug("Running check via helper")
+		log.Debug("Running check via root helper")
 		// Run as root
 		passed, err := shared.RunCheckViaHelper(f.UUID())
 		if err != nil {
-			log.WithError(err).Warn("Failed to run check via helper")
+			log.WithError(err).Warn("Failed to run check via root helper")
 			return err
 		}
 		f.passed = passed
