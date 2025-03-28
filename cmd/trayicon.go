@@ -258,7 +258,7 @@ func updateCheck(chk check.Check, mCheck *systray.MenuItem) {
 func updateClaim(claim claims.Claim, mClaim *systray.MenuItem) {
 	for _, chk := range claim.Checks {
 		checkStatus, found, _ := shared.GetLastState(chk.UUID())
-		if found && checkStatus.State == false {
+		if found && checkStatus.State == false && chk.IsRunnable() {
 			mClaim.SetTitle(fmt.Sprintf("❌ %s", claim.Title))
 			return
 		}
