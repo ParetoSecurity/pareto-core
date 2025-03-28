@@ -67,13 +67,13 @@ func TestSecureBoot_IsRunnable(t *testing.T) {
 		{
 			name:           "System running in UEFI mode",
 			mockStatError:  nil,
-			expectedResult: false,
-			expectedStatus: "",
+			expectedResult: true,
+			expectedStatus: "SecureBoot is disabled", // Default status, unitil Run() is called
 		},
 		{
 			name:           "System not running in UEFI mode",
 			mockStatError:  os.ErrNotExist,
-			expectedResult: true,
+			expectedResult: false,
 			expectedStatus: "System is not running in UEFI mode",
 		},
 	}
@@ -102,7 +102,7 @@ func TestSecureBoot_Name(t *testing.T) {
 
 func TestSecureBoot_Status(t *testing.T) {
 	sb := &SecureBoot{}
-	expectedStatus := ""
+	expectedStatus := "SecureBoot is disabled"
 	if sb.Status() != expectedStatus {
 		t.Errorf("Expected Status %s, got %s", expectedStatus, sb.Status())
 	}
