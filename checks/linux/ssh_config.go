@@ -27,11 +27,11 @@ func (s *SSHConfigCheck) FailedMessage() string {
 
 func (s *SSHConfigCheck) Run() error {
 	if s.RequiresRoot() && !shared.IsRoot() {
-		log.Debug("Running check via helper")
+		log.Debug("Running check via root helper")
 		// Run as root
 		passed, err := shared.RunCheckViaHelper(s.UUID())
 		if err != nil {
-			log.WithError(err).Warn("Failed to run check via helper")
+			log.WithError(err).Warn("Failed to run check via root helper")
 			return err
 		}
 		s.passed = passed
