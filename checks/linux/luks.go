@@ -54,10 +54,12 @@ func (f *EncryptingFS) Run() error {
 	// Check if the system is using LUKS
 	if maybeCryptoViaLuks() {
 		f.passed = true
+		return nil
 	}
 	// Check if the system is using kernel parameters for encryption
 	if maybeCryptoViaKernel() {
 		f.passed = true
+		return nil
 	}
 
 	return nil
