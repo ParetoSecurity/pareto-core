@@ -55,6 +55,8 @@
 
         checks.firewall = pkgs.testers.runNixOSTest ./test/integration/firewall.nix;
 
+        checks.screenlock = pkgs.testers.runNixOSTest ./test/integration/screenlock.nix;
+
         packages.test-debian = testPackage {
           distro = "debian";
           version = "13";

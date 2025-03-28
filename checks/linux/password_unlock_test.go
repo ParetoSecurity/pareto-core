@@ -1,6 +1,8 @@
 package checks
 
 import (
+	"os/exec"
+	"slices"
 	"testing"
 
 	"github.com/ParetoSecurity/agent/shared"
@@ -102,12 +104,14 @@ func TestCheckGnome(t *testing.T) {
 func TestPasswordToUnlock_Run(t *testing.T) {
 	tests := []struct {
 		name           string
+		executables    []string
 		mockCommands   map[string]string
 		expectedPassed bool
 		expectedStatus string
 	}{
 		{
-			name: "GNOME lock disabled",
+			name:        "GNOME lock disabled",
+			executables: []string{"gsettings"},
 			mockCommands: map[string]string{
 				"gsettings get org.gnome.desktop.screensaver lock-enabled": "false\n",
 			},
@@ -115,7 +119,8 @@ func TestPasswordToUnlock_Run(t *testing.T) {
 			expectedStatus: "Password after sleep or screensaver is off",
 		},
 		{
-			name: "KDE autolock disabled",
+			name:        "KDE autolock disabled",
+			executables: []string{"kreadconfig5"},
 			mockCommands: map[string]string{
 				"kreadconfig5 --file kscreenlockerrc --group Daemon --key Autolock": "false\n",
 			},
@@ -123,16 +128,44 @@ func TestPasswordToUnlock_Run(t *testing.T) {
 			expectedStatus: "Password after sleep or screensaver is off",
 		},
 		{
+			name:        "GNOME passing and KDE failing",
+			executables: []string{"gsettings", "kreadconfig5"},
+			mockCommands: map[string]string{
+				"gsettings get org.gnome.desktop.screensaver lock-enabled":          "true\n",
+				"kreadconfig5 --file kscreenlockerrc --group Daemon --key Autolock": "false\n",
+			},
+			expectedPassed: false,
+			expectedStatus: "Password after sleep or screensaver is off",
+		},
+		{
 			name:           "Neither GNOME nor KDE found",
+			executables:    []string{},
 			mockCommands:   map[string]string{},
 			expectedPassed: false,
 			expectedStatus: "Password after sleep or screensaver is off",
+		},
+		{
+			name:        "GNOME and KDE both passing",
+			executables: []string{"gsettings", "kreadconfig5"},
+			mockCommands: map[string]string{
+				"gsettings get org.gnome.desktop.screensaver lock-enabled":          "true\n",
+				"kreadconfig5 --file kscreenlockerrc --group Daemon --key Autolock": "true\n",
+			},
+			expectedPassed: true,
+			expectedStatus: "Password after sleep or screensaver is on",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			shared.RunCommandMocks = convertCommandMapToMocks(tt.mockCommands)
+
+			lookPathMock = func(file string) (string, error) {
+				if slices.Contains(tt.executables, file) {
+					return "/usr/bin/" + file, nil
+				}
+				return "", exec.ErrNotFound
+			}
 
 			f := &PasswordToUnlock{}
 			err := f.Run()
