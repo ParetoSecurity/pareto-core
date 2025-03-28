@@ -223,5 +223,9 @@ func (f *Firewall) Status() string {
 	if f.Passed() {
 		return f.PassedMessage()
 	}
-	return f.status
+	if f.status != "" {
+		return f.status
+	}
+
+	return f.FailedMessage()
 }
