@@ -18,8 +18,8 @@ import (
 	"github.com/ParetoSecurity/agent/shared"
 	"github.com/ParetoSecurity/agent/systemd"
 	"github.com/caarlos0/log"
+	"github.com/fsnotify/fsnotify"
 	"github.com/pkg/browser"
-	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 )
 
@@ -204,6 +204,40 @@ func onReady() {
 	}
 	systray.AddSeparator()
 	addQuitItem()
+
+	go func() {
+		watcher, err := fsnotify.NewWatcher()
+		if err != nil {
+			log.WithError(err).Error("Failed to create file watcher")
+			return
+		}
+		defer watcher.Close()
+
+		err = watcher.Add(shared.StatePath)
+		if err != nil {
+			log.WithError(err).WithField("path", shared.StatePath).Error("Failed to add state file to watcher")
+			return
+		}
+
+		for {
+			select {
+			case event, ok := <-watcher.Events:
+				if !ok {
+					return
+				}
+				if event.Op&fsnotify.Write == fsnotify.Write {
+					log.Info("State file modified, updating...")
+					broadcaster.Send()
+				}
+			case err, ok := <-watcher.Errors:
+				if !ok {
+					return
+				}
+				log.WithError(err).Error("File watcher error")
+			}
+		}
+	}()
+
 }
 
 func updateCheck(chk check.Check, mCheck *systray.MenuItem) {
@@ -222,18 +256,18 @@ func updateCheck(chk check.Check, mCheck *systray.MenuItem) {
 }
 
 func updateClaim(claim claims.Claim, mClaim *systray.MenuItem) {
-	allStatus := lo.Reduce(claim.Checks, func(acc bool, item check.Check, index int) bool {
-		checkStatus, found, _ := shared.GetLastState(item.UUID())
-		if !item.IsRunnable() {
-			return acc && true
+	for _, chk := range claim.Checks {
+		checkStatus, found, _ := shared.GetLastState(chk.UUID())
+		if found && checkStatus.State == false && chk.IsRunnable() {
+			mClaim.SetTitle(fmt.Sprintf("❌ %s", claim.Title))
+			return
 		}
-		return acc && checkStatus.State && found
-	}, true)
+	}
 
-	mClaim.SetTitle(fmt.Sprintf("%s %s", checkStatusToIcon(allStatus), claim.Title))
+	mClaim.SetTitle(fmt.Sprintf("✅ %s", claim.Title))
 }
 
-var menubarCmd = &cobra.Command{
+var trayiconCmd = &cobra.Command{
 	Use:   "trayicon",
 	Short: "Display the status of the checks in the system tray",
 	Run: func(cc *cobra.Command, args []string) {
@@ -247,5 +281,5 @@ var menubarCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(menubarCmd)
+	rootCmd.AddCommand(trayiconCmd)
 }

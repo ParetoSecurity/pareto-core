@@ -1,15 +1,6 @@
 let
-  # Override paretosecurity to use the local codebase
-  pareto = {
-    pkgs,
-    lib,
-    ...
-  }: {
-    services.paretosecurity = {
-      enable = true;
-      package = pkgs.callPackage ../../package.nix {inherit lib;};
-    };
-  };
+  common = import ./common.nix;
+  inherit (common) pareto ssh;
 
   # A simple web server for testing connectivity
   nginx = {pkgs, ...}: {
@@ -21,25 +12,6 @@ let
         };
       };
     };
-  };
-
-  # Easier tests debugging by SSH-ing into nodes
-  ssh = {port}: {...}: {
-    services.openssh = {
-      enable = true;
-      settings = {
-        PermitRootLogin = "yes";
-        PermitEmptyPasswords = "yes";
-      };
-    };
-    security.pam.services.sshd.allowNullPassword = true;
-    virtualisation.forwardPorts = [
-      {
-        from = "host";
-        host.port = port;
-        guest.port = 22;
-      }
-    ];
   };
 in {
   name = "Check test: firewall is on";

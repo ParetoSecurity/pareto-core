@@ -145,7 +145,7 @@ func TestFirewall_Name(t *testing.T) {
 
 func TestFirewall_Status(t *testing.T) {
 	f := &Firewall{}
-	expectedStatus := ""
+	expectedStatus := "Firewall is off"
 	if f.Status() != expectedStatus {
 		t.Errorf("Expected Status %s, got %s", expectedStatus, f.Status())
 	}
