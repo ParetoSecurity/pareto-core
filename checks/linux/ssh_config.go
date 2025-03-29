@@ -71,6 +71,7 @@ func (s *SSHConfigCheck) Passed() bool {
 }
 
 func (s *SSHConfigCheck) IsRunnable() bool {
+	s.status = "SSHd is not installed or not running"
 
 	// Check if sshd service is running via systemd
 	sshdStatus, _ := shared.RunCommand("systemctl", "is-active", "sshd")
@@ -91,7 +92,12 @@ func (s *SSHConfigCheck) IsRunnable() bool {
 
 	// Check if ssh socket service is enabled via systemd
 	sshSocketStatus, _ = shared.RunCommand("systemctl", "is-enabled", "ssh.socket")
-	return strings.TrimSpace(string(sshSocketStatus)) == "enabled"
+	if strings.TrimSpace(string(sshSocketStatus)) == "enabled" {
+		return true
+	}
+
+	s.status = "sshd or ssh service is not running"
+	return false
 }
 
 func (s *SSHConfigCheck) UUID() string {

@@ -53,8 +53,8 @@ func (f *SecureBoot) Passed() bool {
 
 // IsRunnable returns whether SecureBoot is runnable.
 func (f *SecureBoot) IsRunnable() bool {
-	if _, err := osStat("/sys/firmware/efi/efivars"); os.IsNotExist(err) {
-		f.status = "System is not running in UEFI mode"
+	f.status = "System is not running in UEFI mode"
+	if _, err := osStat("/sys/firmware/efi/efivars/"); err != nil && os.IsNotExist(err) {
 		return false
 	}
 	return true
@@ -82,11 +82,11 @@ func (f *SecureBoot) RequiresRoot() bool {
 
 // Status returns the status of the check
 func (f *SecureBoot) Status() string {
+	if f.Passed() {
+		return f.PassedMessage()
+	}
 	if f.status != "" {
 		return f.status
-	}
-	if f.passed {
-		return f.PassedMessage()
 	}
 	return f.FailedMessage()
 }

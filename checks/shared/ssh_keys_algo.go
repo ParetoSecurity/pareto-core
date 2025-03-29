@@ -72,6 +72,7 @@ func (f *SSHKeysAlgo) Run() error {
 	f.passed = true
 	for _, entry := range entries {
 		if !strings.HasSuffix(entry.Name(), ".pub") {
+			// Skip non-public key files
 			continue
 		}
 
@@ -79,10 +80,12 @@ func (f *SSHKeysAlgo) Run() error {
 		privPath := strings.TrimSuffix(pubPath, ".pub")
 
 		if _, err := os.Stat(privPath); os.IsNotExist(err) {
+			// Skip if the corresponding private key does not exist
 			continue
 		}
 
 		if !f.isKeyStrong(pubPath) {
+			log.WithField("file", entry.Name()).Warn("Weak SSH key algorithm detected")
 			f.passed = false
 			f.sshKey = strings.TrimSuffix(entry.Name(), ".pub")
 			break
@@ -99,12 +102,15 @@ func (f *SSHKeysAlgo) Passed() bool {
 
 // IsRunnable returns whether SSHKeysAlgo is runnable.
 func (f *SSHKeysAlgo) IsRunnable() bool {
+	f.details = "No private keys found in the .ssh directory"
 
+	// Check if the user home directory exists
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return false
 	}
 
+	// Check if the .ssh directory exists
 	sshPath := filepath.Join(home, ".ssh")
 	if _, err := os.Stat(sshPath); os.IsNotExist(err) {
 		return false
@@ -116,15 +122,18 @@ func (f *SSHKeysAlgo) IsRunnable() bool {
 		return false
 	}
 
+	// Check if there are any private keys in the .ssh directory
 	for _, file := range files {
 		if strings.HasSuffix(file.Name(), ".pub") {
 			privateKeyPath := filepath.Join(sshPath, strings.TrimSuffix(file.Name(), ".pub"))
 			if _, err := os.Stat(privateKeyPath); err == nil {
+				log.WithField("file", file.Name()).Info("Found private key")
+				f.details = "Found private key: " + file.Name()
 				return true
 			}
 		}
 	}
-	f.details = "No private keys found in the .ssh directory"
+
 	return false
 }
 
