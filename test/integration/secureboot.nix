@@ -51,9 +51,9 @@ in {
       imports = [
         (pareto {inherit pkgs lib;})
       ];
-      # NixOS SecureBook test VM configuration taken from 
+      # NixOS SecureBook test VM configuration taken from
       # https://github.com/NixOS/nixpkgs/blob/master/nixos/tests/systemd-boot.nix
-      
+
       virtualisation.useSecureBoot = true;
       virtualisation.useBootLoader = true;
       virtualisation.useEFIBoot = true;
