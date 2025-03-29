@@ -71,6 +71,12 @@ func TestSecureBoot_IsRunnable(t *testing.T) {
 			expectedStatus: "System is not running in UEFI mode",
 		},
 		{
+			name:           "Some other errror",
+			mockStatError:  os.ErrPermission,
+			expectedResult: true,
+			expectedStatus: "System is not running in UEFI mode",
+		},
+		{
 			name:           "System not running in UEFI mode",
 			mockStatError:  os.ErrNotExist,
 			expectedResult: false,
