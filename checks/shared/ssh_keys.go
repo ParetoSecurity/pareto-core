@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	sharedG "github.com/ParetoSecurity/agent/shared"
+	"github.com/caarlos0/log"
 	"golang.org/x/crypto/ssh"
 )
 
@@ -68,6 +69,7 @@ func (f *SSHKeys) Passed() bool {
 
 // CanRun returns whether the check can run
 func (f *SSHKeys) IsRunnable() bool {
+	f.details = "No private keys found in .ssh directory"
 	home, err := os.UserHomeDir()
 	if err != nil {
 		return false
@@ -88,11 +90,13 @@ func (f *SSHKeys) IsRunnable() bool {
 		if strings.HasSuffix(file.Name(), ".pub") {
 			privateKeyPath := filepath.Join(sshPath, strings.TrimSuffix(file.Name(), ".pub"))
 			if _, err := os.Stat(privateKeyPath); err == nil {
+				f.details = "Found private key: " + file.Name()
+				log.WithField("file", file.Name()).Info("Found private key")
 				return true
 			}
 		}
 	}
-	f.details = "No private keys found in .ssh directory"
+
 	return false
 
 }

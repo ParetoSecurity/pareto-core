@@ -19,29 +19,22 @@ import (
 var lookPathMock func(file string) (string, error)
 
 func lookPath(file string) (string, error) {
-	if testing.Testing() {
+	if testing.Testing() && lookPathMock != nil {
 		return lookPathMock(file)
 	}
 	return exec.LookPath(file)
 }
 
-var osStatMock map[string]bool
+var osStatMock func(file string) (os.FileInfo, error)
 
 // osStat checks if a file exists by attempting to get its file info.
 // During testing, it uses a mock implementation via osStatMock.
 // It returns the file path if the file exists, otherwise returns an empty string and error.
-func osStat(file string) (string, error) {
-	if testing.Testing() {
-		if found := osStatMock[file]; found {
-			return file, nil
-		}
-		return "", os.ErrNotExist
+func osStat(file string) (os.FileInfo, error) {
+	if testing.Testing() && osStatMock != nil {
+		return osStatMock(file)
 	}
-	_, err := os.Stat(file)
-	if err != nil {
-		return "", err
-	}
-	return file, nil
+	return os.Stat(file)
 }
 
 var filepathGlobMock func(pattern string) ([]string, error)
@@ -52,7 +45,7 @@ var filepathGlobMock func(pattern string) ([]string, error)
 // the matching to filepathGlobMock to simulate the behavior. Otherwise, it uses
 // the standard library's filepath.Glob to perform glob pattern matching.
 func filepathGlob(pattern string) ([]string, error) {
-	if testing.Testing() {
+	if testing.Testing() && filepathGlobMock != nil {
 		return filepathGlobMock(pattern)
 	}
 	return filepath.Glob(pattern)
@@ -65,7 +58,7 @@ var osReadFileMock func(file string) ([]byte, error)
 // If the testing mode is enabled, it delegates the file reading to a mock function.
 // Otherwise, it reads the file from disk using the standard os.ReadFile function.
 func osReadFile(file string) ([]byte, error) {
-	if testing.Testing() {
+	if testing.Testing() && osReadFileMock != nil {
 		return osReadFileMock(file)
 	}
 	return os.ReadFile(file)
@@ -77,7 +70,7 @@ var osReadDirMock func(dirname string) ([]os.DirEntry, error)
 // In testing mode, it delegates to osReadDirMock for controlled behavior; otherwise,
 // it uses os.ReadDir from the standard library.
 func osReadDir(dirname string) ([]os.DirEntry, error) {
-	if testing.Testing() {
+	if testing.Testing() && osReadDirMock != nil {
 		return osReadDirMock(dirname)
 	}
 	return os.ReadDir(dirname)

@@ -71,6 +71,7 @@ func (s *SSHConfigCheck) Passed() bool {
 }
 
 func (s *SSHConfigCheck) IsRunnable() bool {
+	s.status = "SSHd is not installed or not running"
 
 	// Check if sshd service is running via systemd
 	sshdStatus, _ := shared.RunCommand("systemctl", "is-active", "sshd")
